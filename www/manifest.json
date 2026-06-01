@@ -1,0 +1,19 @@
+{
+  "name": "Shape Survivor",
+  "short_name": "Shape Survivor",
+  "description": "Offline geometric survival defense game.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
+  "icons": [
+    {
+      "src": "app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

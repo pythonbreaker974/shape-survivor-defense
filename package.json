@@ -1,0 +1,21 @@
+{
+  "name": "shape-survivor",
+  "version": "1.0.0",
+  "description": "Shape Survivor HTML5 canvas game shipped as an iOS app via Capacitor.",
+  "private": true,
+  "scripts": {
+    "icons": "node scripts/generate-icons.js",
+    "sync": "cp assets/app-icon-1024.png app-icon.png && cp index.html www/index.html && cp manifest.json www/manifest.json && cp sw.js www/sw.js && cp app-icon.png www/app-icon.png && node /Users/ahmedalemadi/Desktop/earth-defender/node_modules/@capacitor/cli/bin/capacitor copy ios",
+    "check-sync": "node scripts/check-bundle-sync.js",
+    "test": "node scripts/check-bundle-sync.js"
+  },
+  "keywords": [],
+  "author": "Ahmed Alemadi",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@capacitor/cli": "^8.3.1",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/ios": "^8.3.1"
+  }
+}
