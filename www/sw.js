@@ -1,9 +1,19 @@
-const CACHE_NAME = 'shape-survivor-offline-v2';
+const CACHE_NAME = 'shape-survivor-offline-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './app-icon.png'
+  './app-icon.png',
+  './sounds/select.wav',
+  './sounds/start.wav',
+  './sounds/pickup.wav',
+  './sounds/level.wav',
+  './sounds/damage.wav',
+  './sounds/boss.wav',
+  './sounds/relic.wav',
+  './sounds/achievement.wav',
+  './sounds/shield.wav',
+  './sounds/gameover.wav'
 ];
 
 self.addEventListener('install', (event) => {

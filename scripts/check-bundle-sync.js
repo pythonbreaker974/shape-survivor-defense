@@ -21,7 +21,23 @@ const groups = [
     'app-icon.png',
     'www/app-icon.png',
     'ios/App/App/public/app-icon.png'
-  ]]
+  ]],
+  ...[
+    'achievement',
+    'boss',
+    'damage',
+    'gameover',
+    'level',
+    'pickup',
+    'relic',
+    'select',
+    'shield',
+    'start'
+  ].map((name) => [`sound ${name}`, [
+    `assets/sounds/${name}.wav`,
+    `www/sounds/${name}.wav`,
+    `ios/App/App/public/sounds/${name}.wav`
+  ]])
 ];
 
 function hash(path) {

@@ -140,7 +140,7 @@ body.thumb-right #stick{left:auto;right:calc(env(safe-area-inset-right) + 24px)}
   background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.2));border-color:rgba(255,255,255,.14);
 }
 .menu-stats .stat strong{font-size:21px;color:#fff}
-.menu-actions{display:grid;grid-template-columns:1.2fr repeat(4,.8fr);gap:9px}
+.menu-actions{display:grid;grid-template-columns:1.15fr repeat(5,.76fr);gap:9px}
 .menu-actions .btn{margin-top:0}
 .menu-actions .btn:first-child{min-height:58px;font-size:16px}
 .mission-panel{
@@ -175,23 +175,23 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   box-shadow:0 16px 34px rgba(57,125,255,.32),inset 0 1px 0 rgba(255,255,255,.45);
 }
 .btn.secondary{background:linear-gradient(180deg,#293548,#121925);color:#d9e8f7;border:1px solid rgba(255,255,255,.14);box-shadow:none}
-.choice-grid,.workshop-list,.core-list,.achievement-list{display:grid;gap:8px;margin:14px 0}
-.choice,.workshop-item,.core-item,.achievement-item{
+.choice-grid,.workshop-list,.core-list,.achievement-list,.leaderboard-list{display:grid;gap:8px;margin:14px 0}
+.choice,.workshop-item,.core-item,.achievement-item,.leaderboard-item{
   border:1px solid rgba(255,255,255,.13);border-radius:8px;background:rgba(0,0,0,.26);padding:12px;text-align:left;color:#fff;
 }
 .choice,.core-item{cursor:pointer}
-.choice strong,.workshop-item strong,.core-item strong,.achievement-item strong{display:block;font-size:14px}
-.choice span,.workshop-item span,.core-item span,.achievement-item span{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:4px}
+.choice strong,.workshop-item strong,.core-item strong,.achievement-item strong,.leaderboard-item strong{display:block;font-size:14px}
+.choice span,.workshop-item span,.core-item span,.achievement-item span,.leaderboard-item span{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:4px}
 .choice-top{display:flex;align-items:center;gap:10px}
 .choice-icon{
   width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
   color:#06111c;font-weight:950;font-size:16px;flex:none;
 }
-.workshop-item,.core-item,.achievement-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.workshop-item,.core-item,.achievement-item,.leaderboard-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
 .core-item.selected{border-color:rgba(88,221,255,.5);background:rgba(88,221,255,.08)}
 .achievement-item.done{border-color:rgba(97,240,168,.38);background:rgba(97,240,168,.08)}
 .achievement-item.locked{opacity:.76}
-.core-list,.achievement-list{max-height:420px;overflow:auto;-webkit-overflow-scrolling:touch}
+.core-list,.achievement-list,.leaderboard-list{max-height:420px;overflow:auto;-webkit-overflow-scrolling:touch}
 .setting-list{display:grid;gap:10px;margin:16px 0}
 .setting-item{
   display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;
@@ -246,7 +246,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   .menu-actions{grid-template-columns:1fr}
   .mission-row{grid-template-columns:1fr}
   .mission-reward{text-align:left}
-  .core-item,.achievement-item{grid-template-columns:1fr}
+  .core-item,.achievement-item,.leaderboard-item{grid-template-columns:1fr}
   .setting-item{grid-template-columns:1fr}
   .segmented button{min-width:0}
 }
@@ -293,7 +293,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   .stat span{font-size:9px}
   .stat strong,.menu-stats .stat strong{font-size:18px}
   .btn,.menu-actions .btn:first-child{min-height:44px}
-  .choice-grid,.workshop-list,.core-list,.achievement-list{max-height:180px;overflow:auto;-webkit-overflow-scrolling:touch}
+  .choice-grid,.workshop-list,.core-list,.achievement-list,.leaderboard-list{max-height:180px;overflow:auto;-webkit-overflow-scrolling:touch}
   #levelup .panel{width:min(100%,760px);padding:14px 16px}
   #levelup h1{font-size:28px}
   #levelup .choice-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:none;overflow:visible;margin:10px 0 0}
@@ -360,6 +360,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
         <button class="btn" id="start-btn" type="button">Start Run</button>
         <button class="btn secondary" id="core-btn" type="button">Core</button>
         <button class="btn secondary" id="workshop-btn" type="button">Workshop</button>
+        <button class="btn secondary" id="leaderboard-btn" type="button">Scores</button>
         <button class="btn secondary" id="achievements-btn" type="button">Awards</button>
         <button class="btn secondary" id="settings-btn" type="button">Settings</button>
       </div>
@@ -374,6 +375,26 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   </div>
 </div>
 
+<div id="tutorial" class="overlay h">
+  <div class="panel">
+    <div class="kicker">Quick Training</div>
+    <h1>Survive the Shapes</h1>
+    <div class="choice-grid">
+      <div class="choice">
+        <div class="choice-top"><div class="choice-icon" style="background:#58ddff">1</div><div><strong>Move the core</strong><span>Drag from your thumb side to dodge, kite enemies, and collect XP gems.</span></div></div>
+      </div>
+      <div class="choice">
+        <div class="choice-top"><div class="choice-icon" style="background:#ffcf5a">2</div><div><strong>Build a weapon combo</strong><span>Level up weapons, evolve them, and grab powerups during events.</span></div></div>
+      </div>
+      <div class="choice">
+        <div class="choice-top"><div class="choice-icon" style="background:#b77cff">3</div><div><strong>Beat bosses for relics</strong><span>Boss chests add run-changing relics. Push for a top score offline.</span></div></div>
+      </div>
+    </div>
+    <button class="btn" id="tutorial-start-btn" type="button">Start Run</button>
+    <button class="btn secondary" id="tutorial-close-btn" type="button">Later</button>
+  </div>
+</div>
+
 <div id="core-select" class="overlay h">
   <div class="panel">
     <div class="kicker">Core Classes</div>
@@ -381,6 +402,15 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
     <div class="sub">Unlock different cores with earned cores. Each one changes your starting stats and play style.</div>
     <div id="core-list" class="core-list"></div>
     <button class="btn secondary" id="core-close-btn" type="button">Done</button>
+  </div>
+</div>
+
+<div id="leaderboard" class="overlay h">
+  <div class="panel">
+    <div class="kicker">Offline Leaderboard</div>
+    <h1>Top Runs</h1>
+    <div id="leaderboard-list" class="leaderboard-list"></div>
+    <button class="btn secondary" id="leaderboard-close-btn" type="button">Done</button>
   </div>
 </div>
 
@@ -488,9 +518,11 @@ var player=null;
 var enemies=[],bullets=[],gems=[],powerups=[],particles=[],texts=[],hazards=[],bossAttacks=[];
 var stars=[],runTime=0,kills=0,lastTime=0,spawnTimer=0,bossTimer=0;
 var eventTimer=0,eventTick=0,activeEvent=null,runMode=null,runStats=null,offlineReady=false;
+var tutorialStartPending=false;
 var pointerDown=false,joy={baseX:82,baseY:0,dx:0,dy:0,active:false};
 var save=null,toastTimer=null,settingsReturn='menu';
 var audioCtx=null;
+var soundBuffers={},soundsLoading=false,soundsLoaded=false;
 
 var weaponDefs={
   blaster:{name:'Split Blaster',short:'B',color:'#58ddff',desc:'Adds one aimed bolt and more damage.'},
@@ -529,10 +561,10 @@ var workshopDefs=[
 
 var runModes=[
   {id:'standard',name:'Standard Run',desc:'Balanced waves and rewards.',spawn:1,reward:1,hp:1,damage:1,enemySpeed:1,magnet:0},
-  {id:'swarm',name:'Swarm Rift',desc:'More enemies, more cores.',spawn:1.32,reward:1.18,hp:1,damage:1,enemySpeed:1.03,magnet:0},
-  {id:'glass',name:'Glass Cannon',desc:'Lower HP, higher weapon damage.',spawn:1.04,reward:1.22,hp:.78,damage:1.28,enemySpeed:1,magnet:0},
-  {id:'magnetic',name:'Magnet Storm',desc:'Huge pickup range and faster leveling.',spawn:1.1,reward:1.08,hp:1,damage:1,enemySpeed:1,magnet:90,xp:1.18},
-  {id:'overclock',name:'Overclocked',desc:'Fast weapons, fast enemies.',spawn:1.18,reward:1.2,hp:1,damage:1.08,enemySpeed:1.16,magnet:0,cooldown:.82}
+  {id:'swarm',name:'Swarm Rift',desc:'More enemies, more cores.',spawn:1.24,reward:1.18,hp:1,damage:1.03,enemySpeed:1.02,magnet:0},
+  {id:'glass',name:'Glass Cannon',desc:'Lower HP, higher weapon damage.',spawn:1.02,reward:1.22,hp:.82,damage:1.28,enemySpeed:1,magnet:0},
+  {id:'magnetic',name:'Magnet Storm',desc:'Huge pickup range and faster leveling.',spawn:1.08,reward:1.08,hp:1,damage:1,enemySpeed:1,magnet:90,xp:1.18},
+  {id:'overclock',name:'Overclocked',desc:'Fast weapons, fast enemies.',spawn:1.14,reward:1.2,hp:1,damage:1.08,enemySpeed:1.11,magnet:0,cooldown:.84}
 ];
 
 var eventDefs=[
@@ -549,12 +581,25 @@ var powerupDefs={
   overdrive:{name:'Overdrive',color:'#ffcf5a',short:'O'}
 };
 
+var soundFiles={
+  select:'sounds/select.wav',
+  start:'sounds/start.wav',
+  level:'sounds/level.wav',
+  damage:'sounds/damage.wav',
+  boss:'sounds/boss.wav',
+  pickup:'sounds/pickup.wav',
+  relic:'sounds/relic.wav',
+  achievement:'sounds/achievement.wav',
+  shield:'sounds/shield.wav',
+  gameover:'sounds/gameover.wav'
+};
+
 var coreDefs=[
   {id:'prism',name:'Prism Core',short:'P',color:'#58ddff',cost:0,desc:'Balanced HP, speed, damage, and pickups.',hp:1,speed:1,damage:1,magnet:0,cooldown:1,xp:1,skills:{blaster:1}},
-  {id:'guardian',name:'Guardian Core',short:'G',color:'#61f0a8',cost:45,desc:'More HP, starter shield, and a slow field.',hp:1.32,speed:.9,damage:.95,magnet:0,cooldown:1,xp:1,shield:30,skills:{blaster:1,field:1}},
-  {id:'storm',name:'Storm Core',short:'S',color:'#ffcf5a',cost:65,desc:'Faster weapons with a stronger starter blaster.',hp:.94,speed:1.05,damage:1.08,magnet:0,cooldown:.82,xp:1,skills:{blaster:2}},
-  {id:'magnet',name:'Magnet Core',short:'M',color:'#b77cff',cost:55,desc:'Huge pickup range and faster leveling.',hp:1,speed:1,damage:.96,magnet:120,cooldown:1,xp:1.12,skills:{blaster:1,magnet:1}},
-  {id:'glass',name:'Glass Core',short:'X',color:'#ff5f91',cost:90,desc:'Low HP, high damage, and a starter pulse.',hp:.68,speed:1.04,damage:1.55,magnet:0,cooldown:.92,xp:1,skills:{blaster:1,pulse:1}}
+  {id:'guardian',name:'Guardian Core',short:'G',color:'#61f0a8',cost:32,desc:'More HP, starter shield, and a slow field.',hp:1.3,speed:.92,damage:.96,magnet:0,cooldown:1,xp:1,shield:30,skills:{blaster:1,field:1}},
+  {id:'storm',name:'Storm Core',short:'S',color:'#ffcf5a',cost:48,desc:'Faster weapons with a stronger starter blaster.',hp:.96,speed:1.05,damage:1.08,magnet:0,cooldown:.84,xp:1,skills:{blaster:2}},
+  {id:'magnet',name:'Magnet Core',short:'M',color:'#b77cff',cost:42,desc:'Huge pickup range and faster leveling.',hp:1,speed:1,damage:.97,magnet:120,cooldown:1,xp:1.12,skills:{blaster:1,magnet:1}},
+  {id:'glass',name:'Glass Core',short:'X',color:'#ff5f91',cost:72,desc:'Low HP, high damage, and a starter pulse.',hp:.72,speed:1.04,damage:1.48,magnet:0,cooldown:.92,xp:1,skills:{blaster:1,pulse:1}}
 ];
 
 var relicDefs=[
@@ -593,10 +638,11 @@ save=loadSave();
 function loadSave(){
   var s={
     bestTime:0,bestKills:0,cores:0,workshop:{},
-    settings:{thumbSide:'left',muted:false,coreClass:'prism'},
+    settings:{thumbSide:'left',muted:false,coreClass:'prism',tutorialSeen:false},
     missions:{date:missionDayKey(),progress:{},claimed:{}},
     unlockedCores:{prism:true},
     achievements:{},
+    leaderboard:[],
     totals:{runs:0,kills:0,bosses:0,elites:0,powerups:0,evolutions:0,relics:0,bestEvolutions:0,bestRelics:0}
   };
   try{
@@ -610,17 +656,20 @@ function loadSave(){
       s.missions=(raw.missions&&typeof raw.missions==='object')?raw.missions:s.missions;
       s.unlockedCores=(raw.unlockedCores&&typeof raw.unlockedCores==='object')?raw.unlockedCores:s.unlockedCores;
       s.achievements=(raw.achievements&&typeof raw.achievements==='object')?raw.achievements:s.achievements;
+      s.leaderboard=Array.isArray(raw.leaderboard)?raw.leaderboard:s.leaderboard;
       s.totals=(raw.totals&&typeof raw.totals==='object')?raw.totals:s.totals;
     }
   }catch(e){}
   s.settings.thumbSide=s.settings.thumbSide==='right'?'right':'left';
   s.settings.muted=!!s.settings.muted;
+  s.settings.tutorialSeen=!!s.settings.tutorialSeen;
   s.settings.coreClass=coreDef(s.settings.coreClass)?s.settings.coreClass:'prism';
   if(!s.unlockedCores||typeof s.unlockedCores!=='object')s.unlockedCores={};
   s.unlockedCores.prism=true;
   if(!s.unlockedCores[s.settings.coreClass])s.settings.coreClass='prism';
   if(!s.achievements||typeof s.achievements!=='object')s.achievements={};
   if(!s.totals||typeof s.totals!=='object')s.totals={};
+  s.leaderboard=(Array.isArray(s.leaderboard)?s.leaderboard:[]).filter(function(run){return run&&typeof run==='object'}).slice(0,10);
   ['runs','kills','bosses','elites','powerups','evolutions','relics','bestEvolutions','bestRelics'].forEach(function(id){
     s.totals[id]=Math.max(0,parseInt(s.totals[id],10)||0);
   });
@@ -785,16 +834,51 @@ function unlockAudio(){
       audioCtx=new AudioCtor();
     }
     if(audioCtx.state==='suspended')audioCtx.resume();
+    loadSoundAssets();
   }catch(e){}
+}
+
+function loadSoundAssets(){
+  if(!audioCtx||soundsLoading||soundsLoaded||typeof fetch!=='function')return;
+  soundsLoading=true;
+  var keys=Object.keys(soundFiles);
+  Promise.all(keys.map(function(key){
+    return fetch(soundFiles[key]).then(function(res){
+      if(!res.ok)throw new Error('sound '+key);
+      return res.arrayBuffer();
+    }).then(function(data){
+      return audioCtx.decodeAudioData(data);
+    }).then(function(buffer){
+      soundBuffers[key]=buffer;
+    }).catch(function(){});
+  })).then(function(){
+    soundsLoaded=true;
+    soundsLoading=false;
+  }).catch(function(){
+    soundsLoading=false;
+  });
 }
 
 function sfx(kind){
   if(save.settings.muted)return;
   unlockAudio();
   if(!audioCtx)return;
+  var buffer=soundBuffers[kind];
+  if(buffer){
+    try{
+      var src=audioCtx.createBufferSource();
+      var gain=audioCtx.createGain();
+      src.buffer=buffer;
+      gain.gain.value=.78;
+      src.connect(gain);gain.connect(audioCtx.destination);
+      src.start();
+    }catch(e){}
+    triggerHaptic(kind);
+    return;
+  }
   var map={
     select:[520,.035],start:[330,.06],level:[660,.08],damage:[140,.08],
-    boss:[96,.14],pickup:[780,.045],relic:[440,.12],achievement:[880,.14],gameover:[110,.18]
+    boss:[96,.14],pickup:[780,.045],relic:[440,.12],achievement:[880,.14],gameover:[110,.18],shield:[520,.09]
   };
   var spec=map[kind]||map.select;
   try{
@@ -811,8 +895,12 @@ function sfx(kind){
     osc.connect(gain);gain.connect(audioCtx.destination);
     osc.start(now);osc.stop(now+spec[1]+.02);
   }catch(e){}
-  if(navigator.vibrate&&(kind==='damage'||kind==='boss'||kind==='achievement')){
-    navigator.vibrate(kind==='damage'?20:(kind==='boss'?[40,30,40]:35));
+  triggerHaptic(kind);
+}
+
+function triggerHaptic(kind){
+  if(navigator.vibrate&&(kind==='damage'||kind==='boss'||kind==='achievement'||kind==='shield')){
+    navigator.vibrate(kind==='damage'?20:(kind==='boss'?[40,30,40]:(kind==='shield'?18:35)));
   }
 }
 
@@ -858,7 +946,7 @@ function showToast(msg){
 }
 
 function hideAllOverlays(){
-  ['menu','core-select','achievements','levelup','relic','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
+  ['menu','tutorial','core-select','leaderboard','achievements','levelup','relic','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
 }
 
 function updateMenu(){
@@ -896,7 +984,32 @@ function runModeValue(key,fallback){
   return runMode&&runMode[key]!==undefined?runMode[key]:fallback;
 }
 
+function openTutorial(startAfter){
+  tutorialStartPending=!!startAfter;
+  hideAllOverlays();
+  state='menu';
+  document.getElementById('tutorial').classList.remove('h');
+}
+
+function closeTutorial(startAfter){
+  save.settings.tutorialSeen=true;
+  saveGame();
+  hideAllOverlays();
+  if(startAfter||tutorialStartPending){
+    tutorialStartPending=false;
+    startRun();
+  }else{
+    tutorialStartPending=false;
+    updateMenu();
+    document.getElementById('menu').classList.remove('h');
+  }
+}
+
 function startRun(){
+  if(!save.settings.tutorialSeen){
+    openTutorial(true);
+    return;
+  }
   unlockAudio();
   runMode=pickRunMode();
   var core=selectedCore();
@@ -912,8 +1025,8 @@ function startRun(){
   };
   enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];
   runStats={bosses:0,elites:0,powerups:0,evolutions:0,relics:0,bonusCores:0};
-  activeEvent=null;eventTimer=34+Math.random()*16;eventTick=0;
-  runTime=0;kills=0;spawnTimer=12;bossTimer=68;pointerDown=false;
+  activeEvent=null;eventTimer=38+Math.random()*18;eventTick=0;
+  runTime=0;kills=0;spawnTimer=14;bossTimer=84;pointerDown=false;
   joy.dx=0;joy.dy=0;joy.active=false;
   hideAllOverlays();
   state='playing';
@@ -935,6 +1048,7 @@ function endRun(){
   var achievementBonus=updateTotalsAndAchievements(seconds);
   var bonus=missionBonus+achievementBonus+(runStats?runStats.bonusCores:0);
   earned+=bonus;
+  recordLeaderboardRun(seconds,earned);
   save.cores+=earned;
   saveGame();
   document.getElementById('end-time').textContent=fmtTime(seconds);
@@ -969,6 +1083,26 @@ function updateMissionRewards(seconds){
     }
   });
   return bonus;
+}
+
+function recordLeaderboardRun(seconds,earned){
+  var core=selectedCore();
+  var mode=runMode||runModes[0];
+  var score=seconds*10+kills*3+(runStats?runStats.bosses*120+runStats.relics*90+runStats.evolutions*80:0);
+  save.leaderboard=(Array.isArray(save.leaderboard)?save.leaderboard:[]);
+  save.leaderboard.push({
+    time:seconds,
+    kills:kills,
+    score:Math.floor(score),
+    cores:earned,
+    core:core.name,
+    mode:mode.name,
+    relics:runStats?runStats.relics:0,
+    evolutions:runStats?runStats.evolutions:0,
+    date:new Date().toISOString().slice(0,10)
+  });
+  save.leaderboard.sort(function(a,b){return (b.score||0)-(a.score||0)});
+  save.leaderboard=save.leaderboard.slice(0,10);
 }
 
 function openWorkshop(){
@@ -1044,6 +1178,41 @@ function renderCoreSelect(){
 }
 
 function closeCoreSelect(){
+  hideAllOverlays();
+  updateMenu();
+  document.getElementById('menu').classList.remove('h');
+}
+
+function openLeaderboard(){
+  renderLeaderboard();
+  hideAllOverlays();
+  state='menu';
+  document.getElementById('leaderboard').classList.remove('h');
+}
+
+function renderLeaderboard(){
+  var list=document.getElementById('leaderboard-list');
+  list.innerHTML='';
+  var runs=Array.isArray(save.leaderboard)?save.leaderboard:[];
+  if(!runs.length){
+    var empty=document.createElement('div');
+    empty.className='leaderboard-item';
+    empty.innerHTML='<div><strong>No runs yet</strong><span>Finish a run to save your first local score.</span></div><div class="mission-reward">OFFLINE</div>';
+    list.appendChild(empty);
+    return;
+  }
+  runs.forEach(function(run,index){
+    var item=document.createElement('div');
+    item.className='leaderboard-item';
+    item.innerHTML='<div><strong>#'+(index+1)+' '+fmtTime(run.time)+' - '+fmt(run.kills)+' kills</strong>'+
+      '<span>'+run.core+' / '+run.mode+' / '+(run.relics||0)+' relics / '+(run.evolutions||0)+' evolutions</span>'+
+      '<span>'+run.date+' - '+fmt(run.cores||0)+' cores earned</span></div>'+
+      '<div class="mission-reward">'+fmt(run.score||0)+'</div>';
+    list.appendChild(item);
+  });
+}
+
+function closeLeaderboard(){
   hideAllOverlays();
   updateMenu();
   document.getElementById('menu').classList.remove('h');
@@ -1305,11 +1474,11 @@ function update(dt){
     updateEvents(dt);
     if(spawnTimer<=0){
       spawnWave();
-      spawnTimer=Math.max(14,48-runTime*.08)/Math.max(.75,runModeValue('spawn',1));
+      spawnTimer=Math.max(16,52-runTime*.07)/Math.max(.75,runModeValue('spawn',1));
     }
     if(bossTimer<=0){
       spawnBoss();
-      bossTimer=72;
+      bossTimer=82;
     }
     updatePlayer(dt);
     updateWeapons(dt);
@@ -1343,14 +1512,14 @@ function updateEvents(dt){
     }
     if(activeEvent.time<=0){
       activeEvent=null;
-      eventTimer=42+Math.random()*24;
+      eventTimer=46+Math.random()*26;
     }
     return;
   }
   eventTimer-=dt/60;
   if(eventTimer<=0){
     var def=eventDefs[Math.floor(Math.random()*eventDefs.length)];
-    activeEvent={id:def.id,name:def.name,time:13+Math.random()*5};
+    activeEvent={id:def.id,name:def.name,time:12+Math.random()*5};
     eventTick=.4;
     showToast(def.name);
   }
@@ -1526,7 +1695,7 @@ function spawnBoss(){
   var y=side<2?Math.random()*H:H+44;
   if(side===0){x=Math.random()*W;y=-44}
   if(side===2){x=Math.random()*W;y=H+44}
-  var hp=520+runTime*8;
+  var hp=480+runTime*6.5;
   enemies.push({type:'boss',x:x,y:y,r:34,hp:hp,maxHp:hp,speed:1.0*runModeValue('enemySpeed',1),damage:28,color:'#ff5f91',baseColor:'#ff5f91',
     slow:0,flash:0,boss:true,elite:false,attackTimer:58,attackIndex:0,dash:0,dashVx:0,dashVy:0});
   showToast('Boss incoming');
@@ -1534,7 +1703,7 @@ function spawnBoss(){
 }
 
 function enemyStats(type){
-  var scale=1+runTime/180;
+  var scale=1+runTime/220;
   if(type==='shooter')return {r:14,hp:38*scale,speed:1.05,damage:8,color:'#58ddff',shotTimer:55+Math.random()*40};
   if(type==='bomber')return {r:15,hp:42*scale,speed:1.18,damage:10,color:'#ff9152'};
   if(type==='triangle')return {r:12,hp:24*scale,speed:1.82,damage:7,color:'#61f0a8'};
@@ -2216,8 +2385,12 @@ function scheduleResize(){
 
 document.getElementById('start-btn').onclick=startRun;
 document.getElementById('retry-btn').onclick=startRun;
+document.getElementById('tutorial-start-btn').onclick=function(){closeTutorial(true)};
+document.getElementById('tutorial-close-btn').onclick=function(){closeTutorial(false)};
 document.getElementById('core-btn').onclick=openCoreSelect;
 document.getElementById('core-close-btn').onclick=closeCoreSelect;
+document.getElementById('leaderboard-btn').onclick=openLeaderboard;
+document.getElementById('leaderboard-close-btn').onclick=closeLeaderboard;
 document.getElementById('achievements-btn').onclick=openAchievements;
 document.getElementById('achievements-close-btn').onclick=closeAchievements;
 document.getElementById('workshop-btn').onclick=openWorkshop;
