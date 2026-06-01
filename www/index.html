@@ -57,6 +57,12 @@ button{font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipul
   border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(0,0,0,.38);overflow:hidden;pointer-events:none;
 }
 #xp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 14px rgba(88,221,255,.48)}
+#sector-badge{
+  position:absolute;top:calc(env(safe-area-inset-top) + 82px);left:50%;transform:translateX(-50%);z-index:5;
+  min-width:104px;padding:5px 10px;border:1px solid rgba(124,231,255,.22);border-radius:8px;
+  background:rgba(6,12,22,.66);color:#dceeff;text-align:center;font-size:11px;font-weight:950;
+  box-shadow:0 12px 24px rgba(0,0,0,.24);pointer-events:none;text-shadow:0 2px 10px rgba(0,0,0,.7);
+}
 #stick{
   position:absolute;left:calc(env(safe-area-inset-left) + 24px);bottom:calc(env(safe-area-inset-bottom) + 24px);width:118px;height:118px;border-radius:50%;
   z-index:5;border:1px solid rgba(255,255,255,.12);background:rgba(8,14,24,.28);pointer-events:none;opacity:.72;
@@ -331,6 +337,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   </div>
 </div>
 <div id="xp-bar"><div id="xp-fill"></div></div>
+<div id="sector-badge">Sector 1 - 5:00</div>
 <div id="stick"><div id="stick-dot"></div></div>
 <div id="toast"></div>
 
@@ -440,6 +447,15 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   </div>
 </div>
 
+<div id="sector" class="overlay h">
+  <div class="panel">
+    <div class="kicker">Sector Breach</div>
+    <h1 id="sector-title">Sector 2</h1>
+    <div class="sub">The arena mutates every 5 minutes. Choose the next threat and earn a core bonus.</div>
+    <div id="sector-grid" class="choice-grid"></div>
+  </div>
+</div>
+
 <div id="gameover" class="overlay h">
   <div class="panel">
     <div class="kicker">Run Complete</div>
@@ -518,6 +534,7 @@ var player=null;
 var enemies=[],bullets=[],gems=[],powerups=[],particles=[],texts=[],hazards=[],bossAttacks=[];
 var stars=[],runTime=0,kills=0,lastTime=0,spawnTimer=0,bossTimer=0;
 var eventTimer=0,eventTick=0,activeEvent=null,runMode=null,runStats=null,offlineReady=false;
+var sectorLevel=0,nextSectorTime=300,sectorMods=[];
 var tutorialStartPending=false;
 var pointerDown=false,joy={baseX:82,baseY:0,dx:0,dy:0,active:false};
 var save=null,toastTimer=null,settingsReturn='menu';
@@ -556,7 +573,9 @@ var workshopDefs=[
   {id:'vitality',name:'Core Plating',desc:'+12 starting HP per level',max:6,baseCost:14,costMult:1.55},
   {id:'power',name:'Weapon Tuning',desc:'+6% starting damage per level',max:6,baseCost:16,costMult:1.6},
   {id:'magnet',name:'Pickup Matrix',desc:'+14 pickup range per level',max:5,baseCost:14,costMult:1.55},
-  {id:'fortune',name:'Core Salvage',desc:'+12% cores earned per level',max:5,baseCost:18,costMult:1.65}
+  {id:'fortune',name:'Core Salvage',desc:'+12% cores earned per level',max:5,baseCost:18,costMult:1.65},
+  {id:'shield',name:'Shield Battery',desc:'+8 starting shield per level',max:8,baseCost:70,costMult:1.72},
+  {id:'mastery',name:'Mastery Circuit',desc:'+3% damage per sector per level',max:10,baseCost:90,costMult:1.78}
 ];
 
 var runModes=[
@@ -611,6 +630,15 @@ var relicDefs=[
   {id:'repairLoop',name:'Repair Loop',short:'L',color:'#7affc0',max:1,desc:'Every 35 kills repairs a small amount of HP.'}
 ];
 
+var sectorDefs=[
+  {id:'overrun',name:'Overrun Sector',short:'O',color:'#ff5f91',reward:18,desc:'+18% wave density. Core bonus rises with sector depth.'},
+  {id:'armored',name:'Armored Sector',short:'A',color:'#ffcf5a',reward:20,desc:'Enemies gain heavy plating and bosses grow tougher.'},
+  {id:'haste',name:'Haste Sector',short:'H',color:'#61f0a8',reward:18,desc:'Enemies move faster, but overdrive drops become more common.'},
+  {id:'elite',name:'Elite Sector',short:'E',color:'#f6fbff',reward:24,desc:'Elite shapes appear much more often and drop richer loot.'},
+  {id:'fracture',name:'Fracture Sector',short:'F',color:'#b77cff',reward:22,desc:'Late-game splitter and diamond shapes enter the arena.'},
+  {id:'bossRush',name:'Boss Rush Sector',short:'B',color:'#58ddff',reward:26,desc:'Bosses arrive sooner and carry bigger reward bonuses.'}
+];
+
 var missionDefs=[
   {id:'survive180',name:'Hold the line',desc:'Survive 3:00 in one run',type:'survive',target:180,reward:18},
   {id:'survive300',name:'Deep run',desc:'Survive 5:00 in one run',type:'survive',target:300,reward:30},
@@ -630,7 +658,14 @@ var achievementDefs=[
   {id:'elite50',name:'Elite Cleaner',desc:'Defeat 50 elite shapes',metric:'elites',target:50,reward:40},
   {id:'evolve3',name:'Full Arsenal',desc:'Evolve 3 weapons in one run',metric:'bestEvolutions',target:3,reward:70},
   {id:'relic4',name:'Relic Stack',desc:'Hold 4 boss relics in one run',metric:'bestRelics',target:4,reward:65},
-  {id:'classes3',name:'Core Collector',desc:'Unlock 3 core classes',metric:'unlockedCores',target:3,reward:50}
+  {id:'classes3',name:'Core Collector',desc:'Unlock 3 core classes',metric:'unlockedCores',target:3,reward:50},
+  {id:'survive1200',name:'Twenty Minute Rift',desc:'Survive 20:00 in one run',metric:'bestTime',target:1200,reward:110,time:true},
+  {id:'survive1800',name:'Thirty Minute Rift',desc:'Survive 30:00 in one run',metric:'bestTime',target:1800,reward:160,time:true},
+  {id:'survive2700',name:'Forty Five Minute Rift',desc:'Survive 45:00 in one run',metric:'bestTime',target:2700,reward:240,time:true},
+  {id:'sectors4',name:'Sector Runner',desc:'Clear 4 sectors in one run',metric:'bestSectors',target:4,reward:120},
+  {id:'sectors8',name:'Deep Sector Runner',desc:'Clear 8 sectors in one run',metric:'bestSectors',target:8,reward:220},
+  {id:'kills5000',name:'Geometry Storm',desc:'Destroy 5,000 total shapes',metric:'kills',target:5000,reward:160},
+  {id:'boss25',name:'Boss Breaker Elite',desc:'Defeat 25 total bosses',metric:'bosses',target:25,reward:180}
 ];
 
 save=loadSave();
@@ -643,7 +678,7 @@ function loadSave(){
     unlockedCores:{prism:true},
     achievements:{},
     leaderboard:[],
-    totals:{runs:0,kills:0,bosses:0,elites:0,powerups:0,evolutions:0,relics:0,bestEvolutions:0,bestRelics:0}
+    totals:{runs:0,kills:0,bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,bestEvolutions:0,bestRelics:0,bestSectors:0}
   };
   try{
     var raw=JSON.parse(localStorage.getItem('shape-survivor-save')||'{}');
@@ -670,7 +705,7 @@ function loadSave(){
   if(!s.achievements||typeof s.achievements!=='object')s.achievements={};
   if(!s.totals||typeof s.totals!=='object')s.totals={};
   s.leaderboard=(Array.isArray(s.leaderboard)?s.leaderboard:[]).filter(function(run){return run&&typeof run==='object'}).slice(0,10);
-  ['runs','kills','bosses','elites','powerups','evolutions','relics','bestEvolutions','bestRelics'].forEach(function(id){
+  ['runs','kills','bosses','elites','powerups','evolutions','relics','sectors','bestEvolutions','bestRelics','bestSectors'].forEach(function(id){
     s.totals[id]=Math.max(0,parseInt(s.totals[id],10)||0);
   });
   normalizeMissions(s);
@@ -946,7 +981,7 @@ function showToast(msg){
 }
 
 function hideAllOverlays(){
-  ['menu','tutorial','core-select','leaderboard','achievements','levelup','relic','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
+  ['menu','tutorial','core-select','leaderboard','achievements','levelup','relic','sector','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
 }
 
 function updateMenu(){
@@ -1020,11 +1055,12 @@ function startRun(){
     x:W/2,y:H/2+30,r:16,hp:startHp,maxHp:startHp,level:1,xp:0,nextXp:18,coreColor:core.color,
     speed:3.6*core.speed,damage:(1+workshopLevel('power')*.06)*runMode.damage*core.damage,
     magnet:100+workshopLevel('magnet')*14+runMode.magnet+core.magnet,xpGain:core.xp,coreCooldown:core.cooldown,
-    invuln:0,flash:0,shield:(runMode.id==='overclock'?18:0)+(core.shield||0),overdrive:0,magnetBurst:0,
+    invuln:0,flash:0,shield:(runMode.id==='overclock'?18:0)+(core.shield||0)+workshopLevel('shield')*8,overdrive:0,magnetBurst:0,
     skills:startSkills,evolved:{},relics:{},cool:{blaster:0,pulse:0,drone:0},orbitAngle:0
   };
   enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];
-  runStats={bosses:0,elites:0,powerups:0,evolutions:0,relics:0,bonusCores:0};
+  runStats={bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,bonusCores:0};
+  sectorLevel=0;nextSectorTime=300;sectorMods=[];
   activeEvent=null;eventTimer=38+Math.random()*18;eventTick=0;
   runTime=0;kills=0;spawnTimer=14;bossTimer=84;pointerDown=false;
   joy.dx=0;joy.dy=0;joy.active=false;
@@ -1088,7 +1124,7 @@ function updateMissionRewards(seconds){
 function recordLeaderboardRun(seconds,earned){
   var core=selectedCore();
   var mode=runMode||runModes[0];
-  var score=seconds*10+kills*3+(runStats?runStats.bosses*120+runStats.relics*90+runStats.evolutions*80:0);
+  var score=seconds*10+kills*3+(runStats?runStats.bosses*120+runStats.relics*90+runStats.evolutions*80+runStats.sectors*140:0);
   save.leaderboard=(Array.isArray(save.leaderboard)?save.leaderboard:[]);
   save.leaderboard.push({
     time:seconds,
@@ -1098,6 +1134,7 @@ function recordLeaderboardRun(seconds,earned){
     core:core.name,
     mode:mode.name,
     relics:runStats?runStats.relics:0,
+    sectors:runStats?runStats.sectors:0,
     evolutions:runStats?runStats.evolutions:0,
     date:new Date().toISOString().slice(0,10)
   });
@@ -1205,7 +1242,7 @@ function renderLeaderboard(){
     var item=document.createElement('div');
     item.className='leaderboard-item';
     item.innerHTML='<div><strong>#'+(index+1)+' '+fmtTime(run.time)+' - '+fmt(run.kills)+' kills</strong>'+
-      '<span>'+run.core+' / '+run.mode+' / '+(run.relics||0)+' relics / '+(run.evolutions||0)+' evolutions</span>'+
+      '<span>'+run.core+' / '+run.mode+' / '+(run.sectors||0)+' sectors / '+(run.relics||0)+' relics / '+(run.evolutions||0)+' evolutions</span>'+
       '<span>'+run.date+' - '+fmt(run.cores||0)+' cores earned</span></div>'+
       '<div class="mission-reward">'+fmt(run.score||0)+'</div>';
     list.appendChild(item);
@@ -1265,8 +1302,10 @@ function updateTotalsAndAchievements(seconds){
   save.totals.powerups=(save.totals.powerups||0)+(runStats?runStats.powerups:0);
   save.totals.evolutions=(save.totals.evolutions||0)+(runStats?runStats.evolutions:0);
   save.totals.relics=(save.totals.relics||0)+(runStats?runStats.relics:0);
+  save.totals.sectors=(save.totals.sectors||0)+(runStats?runStats.sectors:0);
   save.totals.bestEvolutions=Math.max(save.totals.bestEvolutions||0,runStats?runStats.evolutions:0);
   save.totals.bestRelics=Math.max(save.totals.bestRelics||0,runStats?runStats.relics:0);
+  save.totals.bestSectors=Math.max(save.totals.bestSectors||0,runStats?runStats.sectors:0);
   var bonus=0;
   achievementDefs.forEach(function(a){
     if(!save.achievements[a.id]&&achievementValue(a)>=a.target){
@@ -1408,6 +1447,50 @@ function openRelicChest(){
   sfx('relic');
 }
 
+function openSectorChoice(){
+  if(!player||state==='gameover')return;
+  state='sector';
+  pointerDown=false;joy.active=false;joy.dx=0;joy.dy=0;
+  var pool=sectorDefs.slice();
+  var grid=document.getElementById('sector-grid');
+  grid.innerHTML='';
+  document.getElementById('sector-title').textContent='Sector '+(sectorLevel+2);
+  for(var i=0;i<3&&pool.length;i++){
+    var idx=Math.floor(Math.random()*pool.length);
+    var sector=pool.splice(idx,1)[0];
+    var reward=sector.reward+sectorLevel*6+sectorCount(sector.id)*4;
+    var btn=document.createElement('button');
+    btn.className='choice';
+    btn.type='button';
+    btn.innerHTML='<div class="choice-top"><div class="choice-icon" style="background:'+sector.color+'">'+sector.short+'</div>'+
+      '<div><strong>'+sector.name+' +'+reward+' cores</strong><span>'+sector.desc+'</span></div></div>';
+    btn.onclick=function(s,r){return function(){
+      applySector(s.id,r);
+      hideAllOverlays();
+      state='playing';
+    }}(sector,reward);
+    grid.appendChild(btn);
+  }
+  hideAllOverlays();
+  document.getElementById('sector').classList.remove('h');
+  sfx('boss');
+}
+
+function applySector(id,reward){
+  sectorLevel++;
+  sectorMods.push(id);
+  nextSectorTime+=300;
+  if(runStats){
+    runStats.sectors++;
+    runStats.bonusCores+=reward;
+  }
+  if(id==='haste')spawnPowerup(player.x,player.y,'overdrive');
+  if(id==='elite')spawnPowerup(player.x,player.y,'shield');
+  spawnParticles(player.x,player.y,'#ffcf5a',54,7);
+  showToast('Sector '+(sectorLevel+1)+' online');
+  sfx('achievement');
+}
+
 function applyRelic(id){
   player.relics[id]=relicLevel(id)+1;
   if(runStats)runStats.relics++;
@@ -1453,6 +1536,34 @@ function relicLevel(id){
   return player&&player.relics&&player.relics[id]?player.relics[id]:0;
 }
 
+function sectorCount(id){
+  var count=0;
+  for(var i=0;i<sectorMods.length;i++)if(sectorMods[i]===id)count++;
+  return count;
+}
+
+function sectorEnemyHpMult(){
+  return 1+sectorLevel*.2+sectorCount('armored')*.32+sectorCount('fracture')*.08;
+}
+
+function sectorEnemySpeedMult(){
+  return 1+sectorLevel*.028+sectorCount('haste')*.1;
+}
+
+function sectorSpawnMult(){
+  return 1+sectorLevel*.08+sectorCount('overrun')*.18+sectorCount('fracture')*.05;
+}
+
+function sectorEliteBonus(){
+  return sectorLevel*.015+sectorCount('elite')*.075+sectorCount('fracture')*.018;
+}
+
+function latestSectorDef(){
+  var id=sectorMods[sectorMods.length-1];
+  for(var i=0;i<sectorDefs.length;i++)if(sectorDefs[i].id===id)return sectorDefs[i];
+  return null;
+}
+
 function gainXp(amount){
   if(!player)return;
   player.xp+=amount*(player.xpGain||1)*(hasRelic('salvage')?1.06:1);
@@ -1469,16 +1580,19 @@ function gainXp(amount){
 function update(dt){
   if(state==='playing'&&player){
     runTime+=dt/60;
+    if(runTime>=nextSectorTime){
+      openSectorChoice();
+    }
     bossTimer-=dt/60;
     spawnTimer-=dt;
     updateEvents(dt);
     if(spawnTimer<=0){
       spawnWave();
-      spawnTimer=Math.max(16,52-runTime*.07)/Math.max(.75,runModeValue('spawn',1));
+      spawnTimer=Math.max(14,52-runTime*.07)/Math.max(.75,runModeValue('spawn',1)*sectorSpawnMult());
     }
     if(bossTimer<=0){
       spawnBoss();
-      bossTimer=82;
+      bossTimer=Math.max(46,82-sectorLevel*4-sectorCount('bossRush')*12);
     }
     updatePlayer(dt);
     updateWeapons(dt);
@@ -1530,6 +1644,7 @@ function updateHud(){
   document.getElementById('level-val').textContent=player?player.level:'1';
   document.getElementById('time-val').textContent=fmtTime(runTime);
   document.getElementById('kill-val').textContent=fmt(kills);
+  document.getElementById('sector-badge').textContent=player?('Sector '+(sectorLevel+1)+' - '+fmtTime(Math.max(0,Math.ceil(nextSectorTime-runTime)))):'Sector 1 - 5:00';
   var xpPct=player?Math.max(0,Math.min(1,player.xp/player.nextXp)):0;
   document.getElementById('xp-fill').style.width=(xpPct*100)+'%';
   var stick=document.getElementById('stick');
@@ -1569,7 +1684,7 @@ function playTopBound(){
 }
 
 function damageMult(){
-  return player.damage*(player.overdrive>0?1.3:1);
+  return player.damage*(player.overdrive>0?1.3:1)*(1+sectorLevel*workshopLevel('mastery')*.03);
 }
 
 function cooldownScale(){
@@ -1657,15 +1772,19 @@ function updateOrbitDamage(dt){
 
 function spawnWave(){
   var amount=1+Math.floor(runTime/22)+Math.floor(Math.random()*2);
-  amount=Math.ceil(amount*runModeValue('spawn',1));
+  amount=Math.ceil(amount*runModeValue('spawn',1)*sectorSpawnMult());
   if(activeEvent&&activeEvent.id==='breach')amount+=2;
-  amount=Math.min(12,amount);
+  amount=Math.min(24,amount);
   for(var i=0;i<amount;i++)spawnEnemy(pickEnemyType());
 }
 
 function pickEnemyType(){
   var t=runTime;
   var r=Math.random();
+  if(t>1500&&r>.76)return 'diamond';
+  if(t>1200&&r>.74)return 'splitter';
+  if(t>900&&r>.78)return 'seeker';
+  if(sectorCount('fracture')&&t>360&&r>.72)return Math.random()<.5?'splitter':'diamond';
   if(t>115&&r>.88)return 'shooter';
   if(t>86&&r>.82)return 'bomber';
   if(t>120&&r>.78)return 'hex';
@@ -1683,10 +1802,10 @@ function spawnEnemy(type){
   if(side===2){x=Math.random()*W;y=H+pad}
   if(side===3){x=-pad;y=Math.random()*H}
   var stats=enemyStats(type);
-  var elite=runTime>55&&Math.random()<Math.min(.045+runTime/3200,.13);
-  var hp=stats.hp*(elite?2.75:1);
-  enemies.push({type:type,x:x,y:y,r:stats.r*(elite?1.18:1),hp:hp,maxHp:hp,speed:stats.speed*runModeValue('enemySpeed',1)*(elite?.92:1),
-    damage:stats.damage*(elite?1.28:1),color:elite?'#f6fbff':stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:elite,shotTimer:stats.shotTimer||0});
+  var elite=runTime>55&&Math.random()<Math.min(.045+runTime/3200+sectorEliteBonus(),.32);
+  var hp=stats.hp*(elite?2.75:1)*sectorEnemyHpMult();
+  enemies.push({type:type,x:x,y:y,r:stats.r*(elite?1.18:1),hp:hp,maxHp:hp,speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult()*(elite?.92:1),
+    damage:stats.damage*(elite?1.28:1)*(1+sectorLevel*.06),color:elite?'#f6fbff':stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:elite,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2});
 }
 
 function spawnBoss(){
@@ -1695,8 +1814,8 @@ function spawnBoss(){
   var y=side<2?Math.random()*H:H+44;
   if(side===0){x=Math.random()*W;y=-44}
   if(side===2){x=Math.random()*W;y=H+44}
-  var hp=480+runTime*6.5;
-  enemies.push({type:'boss',x:x,y:y,r:34,hp:hp,maxHp:hp,speed:1.0*runModeValue('enemySpeed',1),damage:28,color:'#ff5f91',baseColor:'#ff5f91',
+  var hp=(480+runTime*6.5)*(1+sectorLevel*.26+sectorCount('armored')*.2);
+  enemies.push({type:'boss',x:x,y:y,r:34+Math.min(12,sectorLevel*1.5),hp:hp,maxHp:hp,speed:1.0*runModeValue('enemySpeed',1)*sectorEnemySpeedMult(),damage:28+sectorLevel*2,color:'#ff5f91',baseColor:'#ff5f91',
     slow:0,flash:0,boss:true,elite:false,attackTimer:58,attackIndex:0,dash:0,dashVx:0,dashVy:0});
   showToast('Boss incoming');
   sfx('boss');
@@ -1704,6 +1823,9 @@ function spawnBoss(){
 
 function enemyStats(type){
   var scale=1+runTime/220;
+  if(type==='diamond')return {r:18,hp:92*scale,speed:.82,damage:15,color:'#f6fbff'};
+  if(type==='splitter')return {r:17,hp:58*scale,speed:1.05,damage:11,color:'#7affc0'};
+  if(type==='seeker')return {r:10,hp:34*scale,speed:2.15,damage:9,color:'#ff4f72'};
   if(type==='shooter')return {r:14,hp:38*scale,speed:1.05,damage:8,color:'#58ddff',shotTimer:55+Math.random()*40};
   if(type==='bomber')return {r:15,hp:42*scale,speed:1.18,damage:10,color:'#ff9152'};
   if(type==='triangle')return {r:12,hp:24*scale,speed:1.82,damage:7,color:'#61f0a8'};
@@ -1733,6 +1855,11 @@ function updateEnemies(dt){
         performBossAttack(e);
         e.attackTimer=Math.max(70,126-runTime*.12);
       }
+    }else if(e.type==='seeker'){
+      e.wave+=dt*.12;
+      var weave=Math.sin(e.wave)*.65;
+      e.x+=(Math.cos(a)+Math.cos(a+Math.PI/2)*weave)*e.speed*slow*dt;
+      e.y+=(Math.sin(a)+Math.sin(a+Math.PI/2)*weave)*e.speed*slow*dt;
     }else if(e.type==='shooter'){
       var d=dist(e.x,e.y,player.x,player.y);
       var dir=d<142?-1:(d>210?1:.12);
@@ -1928,6 +2055,7 @@ function lineDistance(px,py,x,y,angle,len){
 
 function hitEnemy(e,damage,color){
   if(!e||e.hp<=0)return;
+  if(e.type==='diamond')damage*=.68;
   e.hp-=damage;
   e.flash=8;
   if(Math.random()<.28)spawnParticles(e.x,e.y,color||e.color,3,2.2);
@@ -1961,6 +2089,9 @@ function hitEnemy(e,damage,color){
     if(e.type==='hex'){
       for(var s=0;s<2;s++)spawnEnemyNear(e.x,e.y,'triangle');
     }
+    if(e.type==='splitter'){
+      for(var p=0;p<3;p++)spawnEnemyNear(e.x,e.y,p%2?'triangle':'circle');
+    }
     for(var i=enemies.length-1;i>=0;i--)if(enemies[i]===e){enemies.splice(i,1);break}
     if(e.boss)openRelicChest();
   }
@@ -1968,8 +2099,9 @@ function hitEnemy(e,damage,color){
 
 function spawnEnemyNear(x,y,type){
   var stats=enemyStats(type);
-  enemies.push({type:type,x:x+(Math.random()-.5)*18,y:y+(Math.random()-.5)*18,r:stats.r,hp:stats.hp*.65,maxHp:stats.hp*.65,
-    speed:stats.speed*runModeValue('enemySpeed',1),damage:stats.damage,color:stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:false,shotTimer:stats.shotTimer||0});
+  var hp=stats.hp*.65*sectorEnemyHpMult();
+  enemies.push({type:type,x:x+(Math.random()-.5)*18,y:y+(Math.random()-.5)*18,r:stats.r,hp:hp,maxHp:hp,
+    speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult(),damage:stats.damage*(1+sectorLevel*.04),color:stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:false,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2});
 }
 
 function updateGems(dt){
@@ -2101,6 +2233,13 @@ function drawBackground(){
   g.addColorStop(.45,'#08111f');
   g.addColorStop(1,'#02040a');
   ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  var sector=latestSectorDef();
+  if(sector){
+    ctx.globalAlpha=Math.min(.13,.045+sectorLevel*.012);
+    ctx.fillStyle=sector.color;
+    ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=1;
+  }
   if(activeEvent){
     ctx.globalAlpha=.08+.04*Math.sin(runTime*8);
     ctx.fillStyle=activeEvent.id==='breach'?'#ff5f91':(activeEvent.id==='storm'?'#58ddff':'#ffcf5a');
@@ -2182,6 +2321,9 @@ function drawEnemies(){
     else if(e.type==='square')drawPoly(0,0,e.r,4,Math.PI/4,true);
     else if(e.type==='shooter')drawPoly(0,0,e.r,5,runTime*1.4,true);
     else if(e.type==='bomber')drawPoly(0,0,e.r,4,runTime*.9,true);
+    else if(e.type==='seeker')drawPoly(0,0,e.r,3,runTime*2.2,true);
+    else if(e.type==='splitter')drawPoly(0,0,e.r,6,runTime*.65,true);
+    else if(e.type==='diamond')drawPoly(0,0,e.r,4,0,true);
     else if(e.type==='hex'||e.type==='boss')drawPoly(0,0,e.r,e.type==='boss'?8:6,0,true);
     else{ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill()}
     ctx.shadowBlur=0;

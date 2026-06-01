@@ -18,11 +18,11 @@ Suggested age rating notes:
 
 ## Short Description
 
-Survive endless geometric waves, evolve auto-fire weapons, unlock core classes, and collect boss relics in a fast offline roguelite defense game.
+Survive endless geometric waves, breach harder sectors, evolve auto-fire weapons, unlock core classes, and collect boss relics in a fast offline roguelite defense game.
 
 ## Longer Description Draft
 
-Shape Survivor is a one-thumb offline survival defense game built for quick mobile runs. Dodge waves of geometric enemies, collect XP, pick powerful upgrades, evolve weapons, and defeat bosses to claim run-changing relics.
+Shape Survivor is a one-thumb offline survival defense game built for quick mobile runs and longer mastery runs. Dodge waves of geometric enemies, collect XP, pick powerful upgrades, evolve weapons, breach escalating sectors, and defeat bosses to claim run-changing relics.
 
 Features:
 
@@ -32,6 +32,8 @@ Features:
 - Mute setting
 - Unlockable core classes
 - Boss relic rewards
+- Endless sector breaches with escalating threats
+- Late-game seeker, splitter, and armored diamond enemies
 - Local achievements and leaderboard
 - No ads, tracking, or account required
 
@@ -53,6 +55,7 @@ https://pythonbreaker974.github.io/shape-survivor-legal/support.html
 - Gameplay landscape with thumb control visible
 - Upgrade selection screen
 - Boss relic chest
+- Sector breach choice screen
 - Core class selection
 - Offline leaderboard
 
