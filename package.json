@@ -6,7 +6,7 @@
   "scripts": {
     "icons": "node scripts/generate-icons.js",
     "sounds": "node scripts/generate-sounds.js",
-    "sync": "cp assets/app-icon-1024.png app-icon.png && cp index.html www/index.html && cp manifest.json www/manifest.json && cp sw.js www/sw.js && cp app-icon.png www/app-icon.png && mkdir -p www/sounds && cp assets/sounds/*.wav www/sounds/ && node /Users/ahmedalemadi/Desktop/earth-defender/node_modules/@capacitor/cli/bin/capacitor copy ios",
+    "sync": "cp assets/app-icon-1024.png app-icon.png && cp index.html www/index.html && cp manifest.json www/manifest.json && cp sw.js www/sw.js && cp app-icon.png www/app-icon.png && mkdir -p www/sounds && cp assets/sounds/*.wav www/sounds/ && npx cap copy ios",
     "check-sync": "node scripts/check-bundle-sync.js",
     "test": "node scripts/check-bundle-sync.js"
   },

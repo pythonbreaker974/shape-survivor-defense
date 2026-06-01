@@ -36,7 +36,7 @@ Features:
 - Field objectives with offline rewards
 - Story log fragments and a Final Gate boss route
 - Endless sector breaches with escalating threats
-- Late-game seeker, splitter, and armored diamond enemies
+- Late-game seeker, splitter, and diamond enemies
 - Local achievements and leaderboard
 - No ads, tracking, or account required
 
@@ -50,6 +50,9 @@ https://pythonbreaker974.github.io/shape-survivor-legal/terms.html
 
 Support:
 https://pythonbreaker974.github.io/shape-survivor-legal/support.html
+
+Support Email:
+alemadi.us@gmail.com
 
 ## Screenshot Checklist
 

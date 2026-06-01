@@ -26,4 +26,4 @@ The game may be updated to add, remove, rebalance, or change features. These Ter
 
 ## Contact
 
-For support or terms questions, contact the developer through the support contact listed on the app store page or repository.
+For support or terms questions, contact Ahmed Alemadi at alemadi.us@gmail.com.

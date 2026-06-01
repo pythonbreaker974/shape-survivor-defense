@@ -38,4 +38,4 @@ If you install or download the app through Apple App Store or another platform, 
 
 ## Contact
 
-For privacy questions, contact the developer through the support contact listed on the app store page or repository.
+For privacy questions, contact Ahmed Alemadi at alemadi.us@gmail.com.
