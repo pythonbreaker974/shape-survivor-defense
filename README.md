@@ -26,5 +26,10 @@ npm run sync
 
 - Privacy Policy: [PRIVACY.md](PRIVACY.md)
 - Terms of Use: [TERMS.md](TERMS.md)
+- Public Privacy Policy URL: https://github.com/pythonbreaker974/shape-survivor-legal/blob/main/PRIVACY.md
+- Public Terms URL: https://github.com/pythonbreaker974/shape-survivor-legal/blob/main/TERMS.md
 
-For App Store submission, Apple may require a public Privacy Policy URL. A private GitHub repository is useful for source control, but it is not a public policy URL.
+GitHub Pages has also been enabled for cleaner public URLs:
+
+- https://pythonbreaker974.github.io/shape-survivor-legal/privacy.html
+- https://pythonbreaker974.github.io/shape-survivor-legal/terms.html
