@@ -10,6 +10,9 @@ Shape Survivor is an offline-first HTML5 canvas survival defense game packaged f
 - Offline missions and local achievements
 - Unlockable core classes
 - Boss relic chest rewards
+- Adventure route choices with biome-specific arena rules
+- Field objectives including hunts, fragments, beacons, and safe zones
+- Offline story log fragments and a Final Gate boss route
 - Endless sector breaches with escalating modifiers and core rewards
 - Late-game seeker, splitter, and armored diamond enemy types
 - Powerups, elite enemies, bosses, and random run events

@@ -63,6 +63,13 @@ button{font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipul
   background:rgba(6,12,22,.66);color:#dceeff;text-align:center;font-size:11px;font-weight:950;
   box-shadow:0 12px 24px rgba(0,0,0,.24);pointer-events:none;text-shadow:0 2px 10px rgba(0,0,0,.7);
 }
+#objective-badge{
+  position:absolute;top:calc(env(safe-area-inset-top) + 112px);left:50%;transform:translateX(-50%);z-index:5;
+  max-width:min(88vw,360px);padding:5px 10px;border:1px solid rgba(255,207,90,.24);border-radius:8px;
+  background:rgba(9,12,20,.68);color:#ffe39a;text-align:center;font-size:10px;font-weight:950;
+  box-shadow:0 12px 24px rgba(0,0,0,.22);pointer-events:none;text-shadow:0 2px 10px rgba(0,0,0,.7);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 #stick{
   position:absolute;left:calc(env(safe-area-inset-left) + 24px);bottom:calc(env(safe-area-inset-bottom) + 24px);width:118px;height:118px;border-radius:50%;
   z-index:5;border:1px solid rgba(255,255,255,.12);background:rgba(8,14,24,.28);pointer-events:none;opacity:.72;
@@ -146,7 +153,7 @@ body.thumb-right #stick{left:auto;right:calc(env(safe-area-inset-right) + 24px)}
   background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.2));border-color:rgba(255,255,255,.14);
 }
 .menu-stats .stat strong{font-size:21px;color:#fff}
-.menu-actions{display:grid;grid-template-columns:1.15fr repeat(5,.76fr);gap:9px}
+.menu-actions{display:grid;grid-template-columns:1.15fr repeat(6,.72fr);gap:9px}
 .menu-actions .btn{margin-top:0}
 .menu-actions .btn:first-child{min-height:58px;font-size:16px}
 .mission-panel{
@@ -231,6 +238,8 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   #xp-bar{left:24px;right:24px;top:calc(env(safe-area-inset-top) + 76px)}
   .hud-col{grid-template-columns:repeat(3,1fr)}
   .hud-card{min-width:112px}
+  #sector-badge{top:calc(env(safe-area-inset-top) + 94px)}
+  #objective-badge{top:calc(env(safe-area-inset-top) + 124px)}
 }
 @media (max-width:380px){
   #hud{left:calc(env(safe-area-inset-left) + 7px);right:calc(env(safe-area-inset-right) + 7px);gap:6px}
@@ -267,6 +276,8 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   .hud-val{font-size:14px;margin-top:1px}
   #pause-btn{width:38px;height:34px;font-size:15px;border-radius:7px}
   #xp-bar{top:calc(env(safe-area-inset-top) + 47px);left:calc(env(safe-area-inset-left) + 12px);right:calc(env(safe-area-inset-right) + 12px);height:6px}
+  #sector-badge{top:calc(env(safe-area-inset-top) + 58px)}
+  #objective-badge{top:calc(env(safe-area-inset-top) + 84px)}
   #stick{width:92px;height:92px;left:calc(env(safe-area-inset-left) + 18px);bottom:calc(env(safe-area-inset-bottom) + 12px)}
   body.thumb-right #stick{left:auto;right:calc(env(safe-area-inset-right) + 18px)}
   #stick-dot{left:30px;top:30px;width:32px;height:32px}
@@ -338,6 +349,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
 </div>
 <div id="xp-bar"><div id="xp-fill"></div></div>
 <div id="sector-badge">Sector 1 - 5:00</div>
+<div id="objective-badge">Choose route</div>
 <div id="stick"><div id="stick-dot"></div></div>
 <div id="toast"></div>
 
@@ -369,6 +381,7 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
         <button class="btn secondary" id="workshop-btn" type="button">Workshop</button>
         <button class="btn secondary" id="leaderboard-btn" type="button">Scores</button>
         <button class="btn secondary" id="achievements-btn" type="button">Awards</button>
+        <button class="btn secondary" id="lore-btn" type="button">Log</button>
         <button class="btn secondary" id="settings-btn" type="button">Settings</button>
       </div>
       <div class="mission-panel">
@@ -447,12 +460,31 @@ h1{font-size:34px;line-height:1.02;color:#fff;text-shadow:0 0 24px rgba(88,221,2
   </div>
 </div>
 
+<div id="adventure" class="overlay h">
+  <div class="panel">
+    <div class="kicker">Expedition Route</div>
+    <h1 id="route-title">Choose Route</h1>
+    <div class="sub" id="route-sub">Pick the next biome. Each route changes the arena and starts a field objective.</div>
+    <div id="route-grid" class="choice-grid"></div>
+  </div>
+</div>
+
 <div id="sector" class="overlay h">
   <div class="panel">
     <div class="kicker">Sector Breach</div>
     <h1 id="sector-title">Sector 2</h1>
     <div class="sub">The arena mutates every 5 minutes. Choose the next threat and earn a core bonus.</div>
     <div id="sector-grid" class="choice-grid"></div>
+  </div>
+</div>
+
+<div id="lore" class="overlay h">
+  <div class="panel">
+    <div class="kicker">Recovered Signal</div>
+    <h1>Story Log</h1>
+    <div class="sub">Fragments unlock offline as you push deeper through routes, objectives, and the Final Gate.</div>
+    <div id="lore-list" class="achievement-list"></div>
+    <button class="btn secondary" id="lore-close-btn" type="button">Done</button>
   </div>
 </div>
 
@@ -535,6 +567,8 @@ var enemies=[],bullets=[],gems=[],powerups=[],particles=[],texts=[],hazards=[],b
 var stars=[],runTime=0,kills=0,lastTime=0,spawnTimer=0,bossTimer=0;
 var eventTimer=0,eventTick=0,activeEvent=null,runMode=null,runStats=null,offlineReady=false;
 var sectorLevel=0,nextSectorTime=300,sectorMods=[];
+var activeBiome=null,adventureStep=0,biomeTimer=0,currentObjective=null,objectiveItems=[];
+var finalGateOpen=false,finalGateCleared=false,finalBossSpawned=false;
 var tutorialStartPending=false;
 var pointerDown=false,joy={baseX:82,baseY:0,dx:0,dy:0,active:false};
 var save=null,toastTimer=null,settingsReturn='menu';
@@ -639,6 +673,31 @@ var sectorDefs=[
   {id:'bossRush',name:'Boss Rush Sector',short:'B',color:'#58ddff',reward:26,desc:'Bosses arrive sooner and carry bigger reward bonuses.'}
 ];
 
+var biomeDefs=[
+  {id:'ruins',name:'Neon Ruins',short:'R',color:'#58ddff',spawn:1.04,hp:1,speed:.98,xp:1.03,desc:'Old signal towers reveal caches, but routes bend into ambush lanes.'},
+  {id:'forge',name:'Solar Forge',short:'F',color:'#ff9152',spawn:1.08,hp:1.08,speed:1,xp:1.05,desc:'Fire pulses ignite the arena. Risk the heat for richer core salvage.'},
+  {id:'frost',name:'Frost Grid',short:'I',color:'#b7f3ff',spawn:.96,hp:1.02,speed:.94,playerSpeed:.97,xp:1.04,desc:'Cold grid fields slow combat and reward tight movement.'},
+  {id:'void',name:'Void Nest',short:'V',color:'#b77cff',spawn:1.12,hp:1.04,speed:1.08,xp:1.08,desc:'Teleport scars pull fast shapes from the dark.'},
+  {id:'crystal',name:'Crystal Caves',short:'C',color:'#7affc0',spawn:1.02,hp:1.05,speed:1,xp:1.18,elite:.04,desc:'XP shards bloom everywhere, guarded by sharper elites.'}
+];
+
+var objectiveDefs=[
+  {id:'hunt',name:'Marked Hunt',short:'H',color:'#ff5f91',target:3,time:70,reward:26,desc:'Destroy marked shapes before the signal fades.'},
+  {id:'collect',name:'Lost Fragments',short:'L',color:'#58ddff',target:4,time:80,reward:24,desc:'Recover prism fragments scattered through the biome.'},
+  {id:'beacon',name:'Beacon Guard',short:'B',color:'#ffcf5a',target:32,time:68,reward:30,desc:'Hold near the beacon long enough to stabilize the route.'},
+  {id:'zone',name:'Safe Zone',short:'Z',color:'#61f0a8',target:28,time:62,reward:28,desc:'Fight from inside the marked zone to charge the route key.'}
+];
+
+var finalGateDef={id:'finalGate',name:'Final Gate',short:'G',color:'#f6fbff',reward:160,desc:'Face the Gate Warden. Win a large core cache, then continue endless.'};
+
+var loreDefs=[
+  {id:'firstRoute',name:'Fragment 01 - Wake Signal',hint:'Choose your first expedition route.',text:'The Prism Core woke under a broken star map. Every route was a warning and an invitation.'},
+  {id:'objective3',name:'Fragment 02 - Field Notes',hint:'Complete 3 route objectives in one run.',text:'The old pilots did not survive by firepower alone. They moved from beacon to shard to breach, always chasing the next opening.'},
+  {id:'voidRoute',name:'Fragment 03 - Void Scar',hint:'Enter the Void Nest.',text:'The Void Nest was not empty. It was listening, folding distance until the shapes arrived already angry.'},
+  {id:'deepSectors',name:'Fragment 04 - Sector Hymn',hint:'Clear 4 sectors in one run.',text:'Past the fourth breach, the arena stopped pretending to be a test. It became a map.'},
+  {id:'finalGate',name:'Fragment 05 - Gate Warden',hint:'Defeat the Final Gate Warden.',text:'The gate did not close because the warden fell. It closed because the core finally learned the route home.'}
+];
+
 var missionDefs=[
   {id:'survive180',name:'Hold the line',desc:'Survive 3:00 in one run',type:'survive',target:180,reward:18},
   {id:'survive300',name:'Deep run',desc:'Survive 5:00 in one run',type:'survive',target:300,reward:30},
@@ -647,7 +706,8 @@ var missionDefs=[
   {id:'boss2',name:'Boss breaker',desc:'Defeat 2 bosses today',type:'bosses',target:2,reward:28},
   {id:'elite8',name:'Elite hunter',desc:'Crack 8 elite shapes today',type:'elites',target:8,reward:24},
   {id:'powerups8',name:'Scavenger',desc:'Collect 8 powerups today',type:'powerups',target:8,reward:18},
-  {id:'evolve2',name:'Weapon lab',desc:'Evolve 2 weapons today',type:'evolutions',target:2,reward:32}
+  {id:'evolve2',name:'Weapon lab',desc:'Evolve 2 weapons today',type:'evolutions',target:2,reward:32},
+  {id:'objectives2',name:'Route scout',desc:'Complete 2 route objectives today',type:'objectives',target:2,reward:36}
 ];
 
 var achievementDefs=[
@@ -665,7 +725,11 @@ var achievementDefs=[
   {id:'sectors4',name:'Sector Runner',desc:'Clear 4 sectors in one run',metric:'bestSectors',target:4,reward:120},
   {id:'sectors8',name:'Deep Sector Runner',desc:'Clear 8 sectors in one run',metric:'bestSectors',target:8,reward:220},
   {id:'kills5000',name:'Geometry Storm',desc:'Destroy 5,000 total shapes',metric:'kills',target:5000,reward:160},
-  {id:'boss25',name:'Boss Breaker Elite',desc:'Defeat 25 total bosses',metric:'bosses',target:25,reward:180}
+  {id:'boss25',name:'Boss Breaker Elite',desc:'Defeat 25 total bosses',metric:'bosses',target:25,reward:180},
+  {id:'biomes6',name:'Pathfinder',desc:'Enter 6 total biomes',metric:'biomes',target:6,reward:80},
+  {id:'objectives5',name:'Field Agent',desc:'Complete 5 route objectives',metric:'objectives',target:5,reward:110},
+  {id:'gate1',name:'Gatebreaker',desc:'Defeat the Final Gate Warden',metric:'gates',target:1,reward:220},
+  {id:'lore5',name:'Signal Archivist',desc:'Recover 5 story fragments',metric:'loreFragments',target:5,reward:160}
 ];
 
 save=loadSave();
@@ -677,8 +741,9 @@ function loadSave(){
     missions:{date:missionDayKey(),progress:{},claimed:{}},
     unlockedCores:{prism:true},
     achievements:{},
+    lore:{},
     leaderboard:[],
-    totals:{runs:0,kills:0,bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,bestEvolutions:0,bestRelics:0,bestSectors:0}
+    totals:{runs:0,kills:0,bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,biomes:0,objectives:0,gates:0,loreFragments:0,bestEvolutions:0,bestRelics:0,bestSectors:0,bestObjectives:0}
   };
   try{
     var raw=JSON.parse(localStorage.getItem('shape-survivor-save')||'{}');
@@ -691,6 +756,7 @@ function loadSave(){
       s.missions=(raw.missions&&typeof raw.missions==='object')?raw.missions:s.missions;
       s.unlockedCores=(raw.unlockedCores&&typeof raw.unlockedCores==='object')?raw.unlockedCores:s.unlockedCores;
       s.achievements=(raw.achievements&&typeof raw.achievements==='object')?raw.achievements:s.achievements;
+      s.lore=(raw.lore&&typeof raw.lore==='object')?raw.lore:s.lore;
       s.leaderboard=Array.isArray(raw.leaderboard)?raw.leaderboard:s.leaderboard;
       s.totals=(raw.totals&&typeof raw.totals==='object')?raw.totals:s.totals;
     }
@@ -703,9 +769,11 @@ function loadSave(){
   s.unlockedCores.prism=true;
   if(!s.unlockedCores[s.settings.coreClass])s.settings.coreClass='prism';
   if(!s.achievements||typeof s.achievements!=='object')s.achievements={};
+  if(!s.lore||typeof s.lore!=='object')s.lore={};
   if(!s.totals||typeof s.totals!=='object')s.totals={};
   s.leaderboard=(Array.isArray(s.leaderboard)?s.leaderboard:[]).filter(function(run){return run&&typeof run==='object'}).slice(0,10);
-  ['runs','kills','bosses','elites','powerups','evolutions','relics','sectors','bestEvolutions','bestRelics','bestSectors'].forEach(function(id){
+  s.totals.loreFragments=loreCount(s);
+  ['runs','kills','bosses','elites','powerups','evolutions','relics','sectors','biomes','objectives','gates','loreFragments','bestEvolutions','bestRelics','bestSectors','bestObjectives'].forEach(function(id){
     s.totals[id]=Math.max(0,parseInt(s.totals[id],10)||0);
   });
   normalizeMissions(s);
@@ -981,7 +1049,7 @@ function showToast(msg){
 }
 
 function hideAllOverlays(){
-  ['menu','tutorial','core-select','leaderboard','achievements','levelup','relic','sector','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
+  ['menu','tutorial','core-select','leaderboard','achievements','levelup','relic','adventure','sector','lore','gameover','workshop','settings','paused'].forEach(function(id){document.getElementById(id).classList.add('h')});
 }
 
 function updateMenu(){
@@ -1058,14 +1126,16 @@ function startRun(){
     invuln:0,flash:0,shield:(runMode.id==='overclock'?18:0)+(core.shield||0)+workshopLevel('shield')*8,overdrive:0,magnetBurst:0,
     skills:startSkills,evolved:{},relics:{},cool:{blaster:0,pulse:0,drone:0},orbitAngle:0
   };
-  enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];
-  runStats={bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,bonusCores:0};
+  enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];objectiveItems=[];
+  runStats={bosses:0,elites:0,powerups:0,evolutions:0,relics:0,sectors:0,biomes:0,objectives:0,gates:0,bonusCores:0};
   sectorLevel=0;nextSectorTime=300;sectorMods=[];
+  activeBiome=null;adventureStep=0;biomeTimer=0;currentObjective=null;
+  finalGateOpen=false;finalGateCleared=false;finalBossSpawned=false;
   activeEvent=null;eventTimer=38+Math.random()*18;eventTick=0;
   runTime=0;kills=0;spawnTimer=14;bossTimer=84;pointerDown=false;
   joy.dx=0;joy.dy=0;joy.active=false;
   hideAllOverlays();
-  state='playing';
+  openAdventureChoice('launch');
   showToast(runMode.name);
   sfx('start');
 }
@@ -1124,7 +1194,7 @@ function updateMissionRewards(seconds){
 function recordLeaderboardRun(seconds,earned){
   var core=selectedCore();
   var mode=runMode||runModes[0];
-  var score=seconds*10+kills*3+(runStats?runStats.bosses*120+runStats.relics*90+runStats.evolutions*80+runStats.sectors*140:0);
+  var score=seconds*10+kills*3+(runStats?runStats.bosses*120+runStats.relics*90+runStats.evolutions*80+runStats.sectors*140+runStats.biomes*35+runStats.objectives*90+runStats.gates*650:0);
   save.leaderboard=(Array.isArray(save.leaderboard)?save.leaderboard:[]);
   save.leaderboard.push({
     time:seconds,
@@ -1135,6 +1205,9 @@ function recordLeaderboardRun(seconds,earned){
     mode:mode.name,
     relics:runStats?runStats.relics:0,
     sectors:runStats?runStats.sectors:0,
+    biomes:runStats?runStats.biomes:0,
+    objectives:runStats?runStats.objectives:0,
+    gates:runStats?runStats.gates:0,
     evolutions:runStats?runStats.evolutions:0,
     date:new Date().toISOString().slice(0,10)
   });
@@ -1242,7 +1315,8 @@ function renderLeaderboard(){
     var item=document.createElement('div');
     item.className='leaderboard-item';
     item.innerHTML='<div><strong>#'+(index+1)+' '+fmtTime(run.time)+' - '+fmt(run.kills)+' kills</strong>'+
-      '<span>'+run.core+' / '+run.mode+' / '+(run.sectors||0)+' sectors / '+(run.relics||0)+' relics / '+(run.evolutions||0)+' evolutions</span>'+
+      '<span>'+run.core+' / '+run.mode+' / '+(run.biomes||0)+' routes / '+(run.objectives||0)+' objectives / '+(run.gates||0)+' gates</span>'+
+      '<span>'+(run.sectors||0)+' sectors / '+(run.relics||0)+' relics / '+(run.evolutions||0)+' evolutions</span>'+
       '<span>'+run.date+' - '+fmt(run.cores||0)+' cores earned</span></div>'+
       '<div class="mission-reward">'+fmt(run.score||0)+'</div>';
     list.appendChild(item);
@@ -1282,6 +1356,52 @@ function closeAchievements(){
   document.getElementById('menu').classList.remove('h');
 }
 
+function loreCount(s){
+  s=s||save;
+  var count=0;
+  if(!s||!s.lore)return 0;
+  loreDefs.forEach(function(fragment){if(s.lore[fragment.id])count++});
+  return count;
+}
+
+function unlockLore(id){
+  if(!save.lore||save.lore[id])return false;
+  save.lore[id]=true;
+  save.totals.loreFragments=loreCount(save);
+  saveGame();
+  var fragment=loreDefs.filter(function(f){return f.id===id})[0];
+  texts.push({x:W*.5,y:H*.32,text:'Log recovered',color:'#58ddff',life:82,max:82});
+  if(fragment)showToast(fragment.name.replace('Fragment ',''));
+  sfx('achievement');
+  return true;
+}
+
+function openLoreLog(){
+  renderLoreLog();
+  hideAllOverlays();
+  state='menu';
+  document.getElementById('lore').classList.remove('h');
+}
+
+function renderLoreLog(){
+  var list=document.getElementById('lore-list');
+  list.innerHTML='';
+  loreDefs.forEach(function(fragment,index){
+    var done=!!(save.lore&&save.lore[fragment.id]);
+    var item=document.createElement('div');
+    item.className='achievement-item '+(done?'done':'locked');
+    item.innerHTML='<div><strong>'+fragment.name+'</strong><span>'+(done?fragment.text:fragment.hint)+'</span></div>'+
+      '<div class="mission-reward">'+(done?'FOUND':('??? '+(index+1)))+'</div>';
+    list.appendChild(item);
+  });
+}
+
+function closeLoreLog(){
+  hideAllOverlays();
+  updateMenu();
+  document.getElementById('menu').classList.remove('h');
+}
+
 function achievementValue(a){
   if(a.metric==='bestTime')return save.bestTime;
   if(a.metric==='unlockedCores')return unlockedCoreCount();
@@ -1303,9 +1423,14 @@ function updateTotalsAndAchievements(seconds){
   save.totals.evolutions=(save.totals.evolutions||0)+(runStats?runStats.evolutions:0);
   save.totals.relics=(save.totals.relics||0)+(runStats?runStats.relics:0);
   save.totals.sectors=(save.totals.sectors||0)+(runStats?runStats.sectors:0);
+  save.totals.biomes=(save.totals.biomes||0)+(runStats?runStats.biomes:0);
+  save.totals.objectives=(save.totals.objectives||0)+(runStats?runStats.objectives:0);
+  save.totals.gates=(save.totals.gates||0)+(runStats?runStats.gates:0);
+  save.totals.loreFragments=loreCount(save);
   save.totals.bestEvolutions=Math.max(save.totals.bestEvolutions||0,runStats?runStats.evolutions:0);
   save.totals.bestRelics=Math.max(save.totals.bestRelics||0,runStats?runStats.relics:0);
   save.totals.bestSectors=Math.max(save.totals.bestSectors||0,runStats?runStats.sectors:0);
+  save.totals.bestObjectives=Math.max(save.totals.bestObjectives||0,runStats?runStats.objectives:0);
   var bonus=0;
   achievementDefs.forEach(function(a){
     if(!save.achievements[a.id]&&achievementValue(a)>=a.target){
@@ -1366,7 +1491,8 @@ function resumeGame(){
 function quitToTitle(){
   state='menu';
   player=null;runMode=null;activeEvent=null;
-  enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];
+  activeBiome=null;currentObjective=null;finalGateOpen=false;finalGateCleared=false;
+  enemies=[];bullets=[];gems=[];powerups=[];particles=[];texts=[];hazards=[];bossAttacks=[];objectiveItems=[];
   updateMenu();
   hideAllOverlays();
   document.getElementById('menu').classList.remove('h');
@@ -1415,13 +1541,107 @@ function levelUp(){
   document.getElementById('levelup').classList.remove('h');
 }
 
+function biomeDef(id){
+  for(var i=0;i<biomeDefs.length;i++)if(biomeDefs[i].id===id)return biomeDefs[i];
+  return biomeDefs[0];
+}
+
+function openAdventureChoice(reason){
+  if(!player||state==='gameover')return;
+  reason=reason||'route';
+  state='adventure';
+  pointerDown=false;joy.active=false;joy.dx=0;joy.dy=0;
+  var pool=biomeDefs.filter(function(b){return !activeBiome||b.id!==activeBiome.id});
+  var choices=[];
+  if(finalGateEligible()){
+    choices.push(finalGateDef);
+  }
+  while(choices.length<3&&pool.length){
+    var idx=Math.floor(Math.random()*pool.length);
+    choices.push(pool.splice(idx,1)[0]);
+  }
+  var title=reason==='launch'?'Choose First Route':'Choose Next Route';
+  if(choices[0]&&choices[0].id==='finalGate')title='Final Gate Available';
+  document.getElementById('route-title').textContent=title;
+  document.getElementById('route-sub').textContent=choices[0]&&choices[0].id==='finalGate'?
+    'The deep route is open. Challenge the Gate Warden now or keep building power through another biome.':
+    'Each route changes the arena and starts a field objective with offline rewards.';
+  var grid=document.getElementById('route-grid');
+  grid.innerHTML='';
+  for(var i=0;i<choices.length;i++){
+    var route=choices[i];
+    var reward=route.id==='finalGate'?route.reward:(reason==='launch'?0:12+adventureStep*5+sectorLevel*3);
+    var rewardText=reward>0?' +'+reward+' cores':'';
+    var btn=document.createElement('button');
+    btn.className='choice';
+    btn.type='button';
+    btn.innerHTML='<div class="choice-top"><div class="choice-icon" style="background:'+route.color+'">'+route.short+'</div>'+
+      '<div><strong>'+route.name+rewardText+'</strong><span>'+route.desc+'</span></div></div>';
+    btn.onclick=function(r,cores){return function(){
+      applyAdventureRoute(r.id,cores);
+      hideAllOverlays();
+      state='playing';
+    }}(route,reward);
+    grid.appendChild(btn);
+  }
+  hideAllOverlays();
+  document.getElementById('adventure').classList.remove('h');
+  sfx('relic');
+}
+
+function finalGateEligible(){
+  if(finalGateOpen||finalGateCleared)return false;
+  return runTime>=1440||sectorLevel>=4||(runStats&&runStats.bosses>=5);
+}
+
+function shouldOpenAdventureChoice(){
+  return player&&runStats&&runStats.bosses>=adventureStep&&!finalGateOpen;
+}
+
+function resumeAfterReward(){
+  hideAllOverlays();
+  if(shouldOpenAdventureChoice()){
+    openAdventureChoice('route');
+  }else{
+    state='playing';
+  }
+}
+
+function applyAdventureRoute(id,reward){
+  clearObjective();
+  if(id==='finalGate'){
+    activeBiome=biomeDef('void');
+    finalGateOpen=true;
+    finalBossSpawned=false;
+    bossTimer=Math.min(bossTimer,5);
+    if(runStats)runStats.bonusCores+=reward;
+    unlockLore('voidRoute');
+    spawnParticles(player.x,player.y,finalGateDef.color,64,8);
+    showToast('Final Gate opened');
+    return;
+  }
+  var biome=biomeDef(id);
+  activeBiome=biome;
+  adventureStep++;
+  biomeTimer=3;
+  if(runStats){
+    runStats.biomes++;
+    runStats.bonusCores+=reward;
+  }
+  if(id==='void')unlockLore('voidRoute');
+  if(adventureStep===1)unlockLore('firstRoute');
+  startObjective();
+  spawnParticles(player.x,player.y,biome.color,48,6);
+  showToast(biome.name);
+}
+
 function openRelicChest(){
   if(!player||state==='gameover')return;
   state='relic';
   pointerDown=false;joy.active=false;joy.dx=0;joy.dy=0;
   var pool=relicDefs.filter(function(r){return relicLevel(r.id)<r.max});
   if(!pool.length){
-    state='playing';
+    resumeAfterReward();
     return;
   }
   var grid=document.getElementById('relic-grid');
@@ -1437,8 +1657,7 @@ function openRelicChest(){
       '<div><strong>'+relic.name+' Lv '+next+'</strong><span>'+relic.desc+'</span></div></div>';
     btn.onclick=function(r){return function(){
       applyRelic(r.id);
-      hideAllOverlays();
-      state='playing';
+      resumeAfterReward();
     }}(relic);
     grid.appendChild(btn);
   }
@@ -1486,6 +1705,7 @@ function applySector(id,reward){
   }
   if(id==='haste')spawnPowerup(player.x,player.y,'overdrive');
   if(id==='elite')spawnPowerup(player.x,player.y,'shield');
+  if(runStats&&runStats.sectors>=4)unlockLore('deepSectors');
   spawnParticles(player.x,player.y,'#ffcf5a',54,7);
   showToast('Sector '+(sectorLevel+1)+' online');
   sfx('achievement');
@@ -1564,6 +1784,212 @@ function latestSectorDef(){
   return null;
 }
 
+function biomeValue(key,fallback){
+  return activeBiome&&activeBiome[key]!==undefined?activeBiome[key]:fallback;
+}
+
+function biomeSpawnMult(){
+  return biomeValue('spawn',1);
+}
+
+function biomeEnemyHpMult(){
+  return biomeValue('hp',1);
+}
+
+function biomeEnemySpeedMult(){
+  return biomeValue('speed',1);
+}
+
+function biomeXpMult(){
+  return biomeValue('xp',1);
+}
+
+function biomeEliteBonus(){
+  return biomeValue('elite',0);
+}
+
+function randomPlayPoint(margin){
+  margin=margin||48;
+  var top=playTopBound()+margin;
+  var bottom=Math.max(top+20,H-margin);
+  return {
+    x:margin+Math.random()*Math.max(20,W-margin*2),
+    y:top+Math.random()*Math.max(20,bottom-top)
+  };
+}
+
+function startObjective(){
+  if(!activeBiome)return;
+  var idx=(adventureStep*3+sectorLevel+Math.floor(Math.random()*objectiveDefs.length))%objectiveDefs.length;
+  var def=objectiveDefs[idx];
+  var depth=adventureStep+sectorLevel;
+  currentObjective={
+    id:def.id,name:def.name,color:def.color,short:def.short,
+    progress:0,target:def.target+Math.floor(depth/3),time:def.time+Math.min(18,depth*2),maxTime:def.time+Math.min(18,depth*2),
+    reward:def.reward+depth*4,marked:0,beacon:null,zone:null
+  };
+  objectiveItems=[];
+  if(def.id==='collect')spawnObjectiveFragments(currentObjective.target);
+  if(def.id==='beacon'){
+    var p=randomPlayPoint(72);
+    currentObjective.beacon={x:p.x,y:p.y,r:24,hp:100,maxHp:100};
+  }
+  if(def.id==='zone'){
+    var z=randomPlayPoint(90);
+    currentObjective.zone={x:z.x,y:z.y,r:125,phase:Math.random()*Math.PI*2};
+  }
+}
+
+function spawnObjectiveFragments(count){
+  objectiveItems=[];
+  for(var i=0;i<count;i++){
+    var p=randomPlayPoint(58);
+    objectiveItems.push({x:p.x,y:p.y,r:10,color:currentObjective.color});
+  }
+}
+
+function clearObjective(clearMarks){
+  currentObjective=null;
+  objectiveItems=[];
+  if(clearMarks!==false){
+    for(var i=0;i<enemies.length;i++)enemies[i].marked=false;
+  }
+}
+
+function maybeMarkEnemy(e){
+  if(!currentObjective||currentObjective.id!=='hunt'||e.boss)return;
+  if(currentObjective.progress+currentObjective.marked>=currentObjective.target)return;
+  if(Math.random()<.24){
+    e.marked=true;
+    currentObjective.marked++;
+    e.color=currentObjective.color;
+  }
+}
+
+function updateObjective(dt){
+  if(!currentObjective)return;
+  var o=currentObjective;
+  o.time-=dt/60;
+  if(o.id==='collect'){
+    updateObjectiveItems(dt);
+  }else if(o.id==='beacon'){
+    updateBeaconObjective(dt,o);
+  }else if(o.id==='zone'){
+    updateZoneObjective(dt,o);
+  }
+  if(o.time<=0&&currentObjective)failObjective();
+}
+
+function updateObjectiveItems(dt){
+  for(var i=objectiveItems.length-1;i>=0;i--){
+    var item=objectiveItems[i];
+    var d=dist(item.x,item.y,player.x,player.y);
+    if(d<player.magnet*.55){
+      var a=Math.atan2(player.y-item.y,player.x-item.x);
+      item.x+=Math.cos(a)*dt*2.1;
+      item.y+=Math.sin(a)*dt*2.1;
+    }
+    if(d<player.r+item.r+7){
+      currentObjective.progress++;
+      spawnParticles(item.x,item.y,item.color,14,3.4);
+      objectiveItems.splice(i,1);
+      sfx('pickup');
+      if(currentObjective.progress>=currentObjective.target){
+        completeObjective();
+        return;
+      }
+    }
+  }
+}
+
+function updateBeaconObjective(dt,o){
+  if(!o.beacon)return;
+  var near=dist(player.x,player.y,o.beacon.x,o.beacon.y)<132;
+  if(near)o.progress+=dt/60;
+  else o.beacon.hp-=dt*.035;
+  for(var i=0;i<enemies.length;i++){
+    var e=enemies[i];
+    if(dist(e.x,e.y,o.beacon.x,o.beacon.y)<e.r+o.beacon.r+10){
+      o.beacon.hp-=dt*.12;
+      e.slow=Math.max(e.slow,8);
+    }
+  }
+  if(o.beacon.hp<=0){
+    failObjective();
+  }else if(o.progress>=o.target){
+    completeObjective();
+  }
+}
+
+function updateZoneObjective(dt,o){
+  if(!o.zone)return;
+  o.zone.phase+=dt*.018;
+  o.zone.x=Math.max(70,Math.min(W-70,o.zone.x+Math.cos(o.zone.phase)*dt*.18));
+  o.zone.y=Math.max(playTopBound()+70,Math.min(H-70,o.zone.y+Math.sin(o.zone.phase*.8)*dt*.16));
+  o.zone.r=Math.max(86,125-o.progress*.9);
+  if(dist(player.x,player.y,o.zone.x,o.zone.y)<o.zone.r)o.progress+=dt/60;
+  if(o.progress>=o.target)completeObjective();
+}
+
+function completeObjective(){
+  if(!currentObjective)return;
+  var reward=currentObjective.reward;
+  if(runStats){
+    runStats.objectives++;
+    runStats.bonusCores+=reward;
+  }
+  if(runStats&&runStats.objectives>=3)unlockLore('objective3');
+  spawnGemBurst(player.x,player.y,8,3);
+  spawnPowerup(player.x,player.y,randomPowerup());
+  spawnParticles(player.x,player.y,currentObjective.color,42,6);
+  showToast(currentObjective.name+' +'+reward);
+  clearObjective();
+  sfx('achievement');
+}
+
+function failObjective(){
+  if(!currentObjective)return;
+  showToast('Objective lost');
+  clearObjective();
+}
+
+function objectiveLabel(){
+  if(finalGateOpen&&!finalGateCleared)return finalBossSpawned?'Final Gate: Warden active':'Final Gate: Warden incoming';
+  if(!currentObjective)return activeBiome?activeBiome.name:'Choose route';
+  var o=currentObjective;
+  var time=' '+fmtTime(o.time);
+  if(o.id==='beacon'||o.id==='zone')return o.name+' '+Math.floor(o.progress)+'/'+o.target+'s'+time;
+  return o.name+' '+o.progress+'/'+o.target+time;
+}
+
+function updateBiomeEffects(dt){
+  if(!activeBiome)return;
+  biomeTimer-=dt/60;
+  if(biomeTimer>0)return;
+  if(activeBiome.id==='forge'){
+    var f=randomPlayPoint(60);
+    hazards.push({x:f.x,y:f.y,r:8,maxR:88+sectorLevel*5,life:24,maxLife:24,damage:24*damageMult(),playerDamage:7+sectorLevel,color:activeBiome.color,hit:{}});
+    biomeTimer=10+Math.random()*5;
+  }else if(activeBiome.id==='crystal'){
+    var c=randomPlayPoint(48);
+    spawnGemBurst(c.x,c.y,5+Math.min(5,sectorLevel),2.4);
+    biomeTimer=12+Math.random()*6;
+  }else if(activeBiome.id==='void'){
+    var v=randomPlayPoint(52);
+    spawnParticles(v.x,v.y,activeBiome.color,18,4);
+    spawnEnemyNear(v.x,v.y,Math.random()<.55?'seeker':'triangle');
+    biomeTimer=9+Math.random()*5;
+  }else if(activeBiome.id==='frost'){
+    for(var i=0;i<enemies.length;i++)enemies[i].slow=Math.max(enemies[i].slow,16);
+    spawnParticles(player.x,player.y,activeBiome.color,10,2.5);
+    biomeTimer=11+Math.random()*5;
+  }else{
+    var r=randomPlayPoint(50);
+    spawnPowerup(r.x,r.y,Math.random()<.55?'shield':randomPowerup());
+    biomeTimer=18+Math.random()*7;
+  }
+}
+
 function gainXp(amount){
   if(!player)return;
   player.xp+=amount*(player.xpGain||1)*(hasRelic('salvage')?1.06:1);
@@ -1586,9 +2012,10 @@ function update(dt){
     bossTimer-=dt/60;
     spawnTimer-=dt;
     updateEvents(dt);
+    updateBiomeEffects(dt);
     if(spawnTimer<=0){
       spawnWave();
-      spawnTimer=Math.max(14,52-runTime*.07)/Math.max(.75,runModeValue('spawn',1)*sectorSpawnMult());
+      spawnTimer=Math.max(14,52-runTime*.07)/Math.max(.75,runModeValue('spawn',1)*sectorSpawnMult()*biomeSpawnMult());
     }
     if(bossTimer<=0){
       spawnBoss();
@@ -1602,6 +2029,7 @@ function update(dt){
     updateGems(dt);
     updatePowerups(dt);
     updateHazards(dt);
+    updateObjective(dt);
     if(player.hp<=0)endRun();
   }
   updateParticles(dt);
@@ -1645,6 +2073,7 @@ function updateHud(){
   document.getElementById('time-val').textContent=fmtTime(runTime);
   document.getElementById('kill-val').textContent=fmt(kills);
   document.getElementById('sector-badge').textContent=player?('Sector '+(sectorLevel+1)+' - '+fmtTime(Math.max(0,Math.ceil(nextSectorTime-runTime)))):'Sector 1 - 5:00';
+  document.getElementById('objective-badge').textContent=player?objectiveLabel():'Choose route';
   var xpPct=player?Math.max(0,Math.min(1,player.xp/player.nextXp)):0;
   document.getElementById('xp-fill').style.width=(xpPct*100)+'%';
   var stick=document.getElementById('stick');
@@ -1658,8 +2087,9 @@ function updatePlayer(dt){
   if(player.magnetBurst>0)player.magnetBurst-=dt;
   var mag=Math.sqrt(joy.dx*joy.dx+joy.dy*joy.dy);
   if(mag>.08){
-    player.x+=joy.dx*player.speed*dt;
-    player.y+=joy.dy*player.speed*dt;
+    var moveSpeed=player.speed*biomeValue('playerSpeed',1);
+    player.x+=joy.dx*moveSpeed*dt;
+    player.y+=joy.dy*moveSpeed*dt;
   }
   player.x=Math.max(24,Math.min(W-24,player.x));
   player.y=Math.max(playTopBound(),Math.min(H-24,player.y));
@@ -1772,7 +2202,7 @@ function updateOrbitDamage(dt){
 
 function spawnWave(){
   var amount=1+Math.floor(runTime/22)+Math.floor(Math.random()*2);
-  amount=Math.ceil(amount*runModeValue('spawn',1)*sectorSpawnMult());
+  amount=Math.ceil(amount*runModeValue('spawn',1)*sectorSpawnMult()*biomeSpawnMult());
   if(activeEvent&&activeEvent.id==='breach')amount+=2;
   amount=Math.min(24,amount);
   for(var i=0;i<amount;i++)spawnEnemy(pickEnemyType());
@@ -1785,6 +2215,9 @@ function pickEnemyType(){
   if(t>1200&&r>.74)return 'splitter';
   if(t>900&&r>.78)return 'seeker';
   if(sectorCount('fracture')&&t>360&&r>.72)return Math.random()<.5?'splitter':'diamond';
+  if(activeBiome&&activeBiome.id==='void'&&t>180&&r>.68)return 'seeker';
+  if(activeBiome&&activeBiome.id==='crystal'&&t>160&&r>.72)return 'hex';
+  if(activeBiome&&activeBiome.id==='forge'&&t>120&&r>.7)return 'bomber';
   if(t>115&&r>.88)return 'shooter';
   if(t>86&&r>.82)return 'bomber';
   if(t>120&&r>.78)return 'hex';
@@ -1802,22 +2235,29 @@ function spawnEnemy(type){
   if(side===2){x=Math.random()*W;y=H+pad}
   if(side===3){x=-pad;y=Math.random()*H}
   var stats=enemyStats(type);
-  var elite=runTime>55&&Math.random()<Math.min(.045+runTime/3200+sectorEliteBonus(),.32);
-  var hp=stats.hp*(elite?2.75:1)*sectorEnemyHpMult();
-  enemies.push({type:type,x:x,y:y,r:stats.r*(elite?1.18:1),hp:hp,maxHp:hp,speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult()*(elite?.92:1),
-    damage:stats.damage*(elite?1.28:1)*(1+sectorLevel*.06),color:elite?'#f6fbff':stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:elite,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2});
+  var elite=runTime>55&&Math.random()<Math.min(.045+runTime/3200+sectorEliteBonus()+biomeEliteBonus(),.34);
+  var hp=stats.hp*(elite?2.75:1)*sectorEnemyHpMult()*biomeEnemyHpMult();
+  var enemy={type:type,x:x,y:y,r:stats.r*(elite?1.18:1),hp:hp,maxHp:hp,speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult()*biomeEnemySpeedMult()*(elite?.92:1),
+    damage:stats.damage*(elite?1.28:1)*(1+sectorLevel*.06),color:elite?'#f6fbff':stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:elite,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2,marked:false};
+  maybeMarkEnemy(enemy);
+  enemies.push(enemy);
 }
 
 function spawnBoss(){
+  if(finalGateOpen&&finalBossSpawned&&!finalGateCleared){
+    for(var fb=0;fb<enemies.length;fb++)if(enemies[fb].type==='finalBoss')return;
+  }
   var side=Math.floor(Math.random()*4);
   var x=side%2?W+44:-44;
   var y=side<2?Math.random()*H:H+44;
   if(side===0){x=Math.random()*W;y=-44}
   if(side===2){x=Math.random()*W;y=H+44}
-  var hp=(480+runTime*6.5)*(1+sectorLevel*.26+sectorCount('armored')*.2);
-  enemies.push({type:'boss',x:x,y:y,r:34+Math.min(12,sectorLevel*1.5),hp:hp,maxHp:hp,speed:1.0*runModeValue('enemySpeed',1)*sectorEnemySpeedMult(),damage:28+sectorLevel*2,color:'#ff5f91',baseColor:'#ff5f91',
-    slow:0,flash:0,boss:true,elite:false,attackTimer:58,attackIndex:0,dash:0,dashVx:0,dashVy:0});
-  showToast('Boss incoming');
+  var final=finalGateOpen&&!finalGateCleared&&!finalBossSpawned;
+  if(final)finalBossSpawned=true;
+  var hp=(final?1550+runTime*9:480+runTime*6.5)*(1+sectorLevel*.26+sectorCount('armored')*.2)*biomeEnemyHpMult();
+  enemies.push({type:final?'finalBoss':'boss',x:x,y:y,r:(final?46:34)+Math.min(12,sectorLevel*1.5),hp:hp,maxHp:hp,speed:(final?.86:1.0)*runModeValue('enemySpeed',1)*sectorEnemySpeedMult()*biomeEnemySpeedMult(),damage:(final?36:28)+sectorLevel*2,color:final?'#f6fbff':'#ff5f91',baseColor:final?'#b77cff':'#ff5f91',
+    slow:0,flash:0,boss:true,elite:false,attackTimer:final?42:58,attackIndex:0,dash:0,dashVx:0,dashVy:0});
+  showToast(final?'Gate Warden':'Boss incoming');
   sfx('boss');
 }
 
@@ -2065,6 +2505,11 @@ function hitEnemy(e,damage,color){
       if(e.boss)runStats.bosses++;
       if(e.elite)runStats.elites++;
     }
+    if(e.marked&&currentObjective&&currentObjective.id==='hunt'){
+      currentObjective.progress++;
+      currentObjective.marked=Math.max(0,currentObjective.marked-1);
+      if(currentObjective.progress>=currentObjective.target)completeObjective();
+    }
     if(hasRelic('killPulse')&&kills%50===0){
       firePulse(Math.max(1,skillLevel('pulse')||1));
       showToast('Pulse reactor');
@@ -2078,7 +2523,7 @@ function hitEnemy(e,damage,color){
       else if(e.elite&&Math.random()<.35)runStats.bonusCores+=relicLevel('salvage');
     }
     spawnParticles(e.x,e.y,e.color,22+(e.boss?30:0),e.boss?7:4);
-    var xp=(e.boss?38:5+(e.r>14?3:0))*(runModeValue('xp',1));
+    var xp=(e.boss?38:5+(e.r>14?3:0))*(runModeValue('xp',1))*biomeXpMult();
     gems.push({x:e.x,y:e.y,r:e.boss?8:5,xp:xp,color:e.boss?'#ffcf5a':'#58ddff',vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2});
     if(e.elite||e.boss||Math.random()<.018){
       spawnPowerup(e.x,e.y,randomPowerup());
@@ -2092,6 +2537,16 @@ function hitEnemy(e,damage,color){
     if(e.type==='splitter'){
       for(var p=0;p<3;p++)spawnEnemyNear(e.x,e.y,p%2?'triangle':'circle');
     }
+    if(e.type==='finalBoss'){
+      finalGateCleared=true;
+      finalGateOpen=false;
+      if(runStats){
+        runStats.gates++;
+        runStats.bonusCores+=220+sectorLevel*30;
+      }
+      unlockLore('finalGate');
+      showToast('Final Gate sealed');
+    }
     for(var i=enemies.length-1;i>=0;i--)if(enemies[i]===e){enemies.splice(i,1);break}
     if(e.boss)openRelicChest();
   }
@@ -2099,9 +2554,11 @@ function hitEnemy(e,damage,color){
 
 function spawnEnemyNear(x,y,type){
   var stats=enemyStats(type);
-  var hp=stats.hp*.65*sectorEnemyHpMult();
-  enemies.push({type:type,x:x+(Math.random()-.5)*18,y:y+(Math.random()-.5)*18,r:stats.r,hp:hp,maxHp:hp,
-    speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult(),damage:stats.damage*(1+sectorLevel*.04),color:stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:false,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2});
+  var hp=stats.hp*.65*sectorEnemyHpMult()*biomeEnemyHpMult();
+  var enemy={type:type,x:x+(Math.random()-.5)*18,y:y+(Math.random()-.5)*18,r:stats.r,hp:hp,maxHp:hp,
+    speed:stats.speed*runModeValue('enemySpeed',1)*sectorEnemySpeedMult()*biomeEnemySpeedMult(),damage:stats.damage*(1+sectorLevel*.04),color:stats.color,baseColor:stats.color,slow:0,flash:0,boss:false,elite:false,shotTimer:stats.shotTimer||0,wave:Math.random()*Math.PI*2,marked:false};
+  maybeMarkEnemy(enemy);
+  enemies.push(enemy);
 }
 
 function updateGems(dt){
@@ -2216,6 +2673,7 @@ function updateParticles(dt){
 function draw(){
   ctx.clearRect(0,0,W,H);
   drawBackground();
+  drawObjective();
   drawGems();
   drawPowerups();
   drawHazards();
@@ -2233,6 +2691,12 @@ function drawBackground(){
   g.addColorStop(.45,'#08111f');
   g.addColorStop(1,'#02040a');
   ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  if(activeBiome){
+    ctx.globalAlpha=.075;
+    ctx.fillStyle=activeBiome.color;
+    ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha=1;
+  }
   var sector=latestSectorDef();
   if(sector){
     ctx.globalAlpha=Math.min(.13,.045+sectorLevel*.012);
@@ -2259,6 +2723,80 @@ function drawBackground(){
   for(var x=-42+drift;x<W+42;x+=42){
     ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x-W*.18,H);ctx.stroke();
   }
+  if(activeBiome)drawBiomePattern(activeBiome);
+}
+
+function drawBiomePattern(biome){
+  ctx.save();
+  ctx.globalAlpha=.13;
+  ctx.strokeStyle=biome.color;
+  ctx.fillStyle=biome.color;
+  if(biome.id==='ruins'){
+    for(var i=0;i<5;i++){
+      var x=(i*157+runTime*9)%W;
+      ctx.strokeRect(x,playTopBound()+32+(i%3)*96,46,28);
+    }
+  }else if(biome.id==='forge'){
+    for(var f=0;f<4;f++){
+      ctx.beginPath();ctx.arc((f*211+runTime*18)%W,playTopBound()+70+(f%2)*180,26+f*4,0,Math.PI*2);ctx.stroke();
+    }
+  }else if(biome.id==='frost'){
+    for(var y=playTopBound()+40;y<H;y+=74){
+      ctx.beginPath();ctx.moveTo(0,y+Math.sin(runTime+y)*5);ctx.lineTo(W,y+Math.cos(runTime+y)*5);ctx.stroke();
+    }
+  }else if(biome.id==='void'){
+    ctx.globalAlpha=.1+.04*Math.sin(runTime*2);
+    ctx.beginPath();ctx.arc(W*.5,H*.52,Math.max(W,H)*.22,runTime*.4,runTime*.4+Math.PI*1.6);ctx.stroke();
+  }else{
+    for(var c=0;c<8;c++){
+      drawPoly((c*97+runTime*10)%W,playTopBound()+40+(c%5)*82,8+(c%3)*3,4,Math.PI/4+runTime*.4,false);
+    }
+  }
+  ctx.restore();
+}
+
+function drawObjective(){
+  ctx.save();
+  if(finalGateOpen&&!finalGateCleared){
+    ctx.globalAlpha=.16+.08*Math.sin(runTime*4);
+    ctx.strokeStyle=finalGateDef.color;
+    ctx.lineWidth=5;
+    ctx.shadowColor=finalGateDef.color;
+    ctx.shadowBlur=24;
+    ctx.beginPath();ctx.arc(W*.5,H*.5,78+Math.sin(runTime*2)*10,0,Math.PI*2);ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+  if(currentObjective){
+    var o=currentObjective;
+    if(o.zone){
+      ctx.globalAlpha=.13;
+      ctx.fillStyle=o.color;
+      ctx.beginPath();ctx.arc(o.zone.x,o.zone.y,o.zone.r,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=.72;
+      ctx.strokeStyle=o.color;ctx.lineWidth=3;ctx.shadowColor=o.color;ctx.shadowBlur=18;
+      ctx.beginPath();ctx.arc(o.zone.x,o.zone.y,o.zone.r,0,Math.PI*2);ctx.stroke();
+    }
+    if(o.beacon){
+      ctx.globalAlpha=.22;
+      ctx.fillStyle=o.color;
+      ctx.beginPath();ctx.arc(o.beacon.x,o.beacon.y,132,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=1;
+      ctx.shadowColor=o.color;ctx.shadowBlur=20;ctx.fillStyle=o.color;
+      drawPoly(o.beacon.x,o.beacon.y,o.beacon.r,6,Math.PI/6,true);
+      ctx.shadowBlur=0;
+      var w=64,pct=Math.max(0,o.beacon.hp/o.beacon.maxHp);
+      ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(o.beacon.x-w/2,o.beacon.y-o.beacon.r-16,w,5);
+      ctx.fillStyle=pct>.35?'#61f0a8':'#ff4f72';ctx.fillRect(o.beacon.x-w/2,o.beacon.y-o.beacon.r-16,w*pct,5);
+    }
+  }
+  for(var i=0;i<objectiveItems.length;i++){
+    var item=objectiveItems[i];
+    ctx.globalAlpha=.9;
+    ctx.fillStyle=item.color;ctx.shadowColor=item.color;ctx.shadowBlur=18;
+    drawPoly(item.x,item.y,item.r,4,Math.PI/4+runTime*1.8,true);
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
 }
 
 function drawPlayer(){
@@ -2324,6 +2862,7 @@ function drawEnemies(){
     else if(e.type==='seeker')drawPoly(0,0,e.r,3,runTime*2.2,true);
     else if(e.type==='splitter')drawPoly(0,0,e.r,6,runTime*.65,true);
     else if(e.type==='diamond')drawPoly(0,0,e.r,4,0,true);
+    else if(e.type==='finalBoss')drawPoly(0,0,e.r,10,runTime*.45,true);
     else if(e.type==='hex'||e.type==='boss')drawPoly(0,0,e.r,e.type==='boss'?8:6,0,true);
     else{ctx.beginPath();ctx.arc(0,0,e.r,0,Math.PI*2);ctx.fill()}
     ctx.shadowBlur=0;
@@ -2334,6 +2873,10 @@ function drawEnemies(){
     if(e.slow>0){
       ctx.strokeStyle='#b7f3ff';ctx.lineWidth=2;
       ctx.beginPath();ctx.arc(0,0,e.r+4,0,Math.PI*2);ctx.stroke();
+    }
+    if(e.marked){
+      ctx.strokeStyle='#ffcf5a';ctx.lineWidth=3;
+      ctx.beginPath();ctx.arc(0,0,e.r+10,runTime*4,runTime*4+Math.PI*1.55);ctx.stroke();
     }
     if(e.boss||e.hp<e.maxHp){
       var w=e.r*2.2;
@@ -2535,6 +3078,8 @@ document.getElementById('leaderboard-btn').onclick=openLeaderboard;
 document.getElementById('leaderboard-close-btn').onclick=closeLeaderboard;
 document.getElementById('achievements-btn').onclick=openAchievements;
 document.getElementById('achievements-close-btn').onclick=closeAchievements;
+document.getElementById('lore-btn').onclick=openLoreLog;
+document.getElementById('lore-close-btn').onclick=closeLoreLog;
 document.getElementById('workshop-btn').onclick=openWorkshop;
 document.getElementById('end-workshop-btn').onclick=openWorkshop;
 document.getElementById('workshop-close-btn').onclick=closeWorkshop;
